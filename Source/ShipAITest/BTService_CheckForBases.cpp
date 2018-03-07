@@ -6,6 +6,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "ShipAITestPawn.h"
+#include "ThirdPersonTestCharacter.h"
 #include "ShipCharacter.h"
 #include "ShipAITest.h"
 #include "ShipAI.h"
@@ -22,11 +23,12 @@ void UBTService_CheckForBases::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 	if (ShipPC)
 	{
-		AShipAITestPawn *Base = Cast<AShipAITestPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		AThirdPersonTestCharacter *Base = Cast<AThirdPersonTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
 		if (Base)
 		{
 			OwnerComp.GetBlackboardComponent()->SetValue<UBlackboardKeyType_Object>(ShipPC->Base1ID, Base);
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, "Enemy is here!");
 		}
 	}
 }

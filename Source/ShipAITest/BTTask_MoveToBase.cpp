@@ -6,6 +6,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "ShipAI.h"
+#include "ThirdPersonTestCharacter.h"
 #include "ShipAITestPawn.h"
 #include "ShipCharacter.h"
 
@@ -14,7 +15,7 @@ EBTNodeResult::Type UBTTask_MoveToBase::ExecuteTask(UBehaviorTreeComponent& Owne
 {
 	AShipAI *CharPC = Cast<AShipAI>(OwnerComp.GetAIOwner());
 
-	AShipAITestPawn *Base = Cast<AShipAITestPawn>(OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Object>(CharPC->Base1ID));
+	AThirdPersonTestCharacter *Base = Cast<AThirdPersonTestCharacter>(OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Object>(CharPC->Base1ID));
 
 	if (Base)
 	{
