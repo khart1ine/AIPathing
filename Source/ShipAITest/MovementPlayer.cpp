@@ -3,6 +3,8 @@
 #include "MovementPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "MovementGameModeBase.h"
+#include "DrawDebugHelpers.h"
+#include "PaperSprite.h"
 
 
 // Sets default values
@@ -20,6 +22,12 @@ AMovementPlayer::AMovementPlayer()
 	Pitch = 0.01f;
 	Velocity = FVector2DPlus (0.0f, 0.0f);
 	Position = FVector2DPlus(0.0f, 0.0f);
+
+	//Setup Sprite SubObject
+	PaperSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Player Sprite"));
+	RootComponent = PaperSpriteComponent;
+
+	CollisionRadiusAdjustment = -32.0f;
 
 }
 
@@ -40,7 +48,13 @@ void AMovementPlayer::BeginPlay()
 		//Up casts to our special gamemode base that holds camera reference
 		GameMode = (AMovementGameModeBase * )GMB;
 	}
-	
+
+	UPaperSprite* PaperSprite = PaperSpriteComponent->GetSprite();
+
+	if (PaperSprite)
+	{
+		Radius = FVector2DPlus::Diagonal(PaperSprite->GetSourceSize().X, PaperSprite->GetSourceSize().Y, CollisionRadiusAdjustment)/2;
+	}
 }
 
 // Called every frame
@@ -89,23 +103,28 @@ void AMovementPlayer::Tick(float DeltaTime)
 	Position += Velocity * DeltaTime;
 
 	SetActorLocation2D(Position);
-
-	/*if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(10, 100.0f, FColor::Green, FString::Printf(TEXT("Speed: %f"), Speed));
-		GEngine->AddOnScreenDebugMessage(11, 100.0f, FColor::Green, FString::Printf(TEXT("Velocity: %f"), Velocity.Size()));
-		GEngine->AddOnScreenDebugMessage(12, 100.0f, FColor::Green, FString::Printf(TEXT("Rotation: %f"), Rotation));
-	}*/
-
-	//if (GameMode)
-	//{
-	//	Frustum Extents = GameMode->GetCameraExtents();
-
-	//}
 	
 	if (GameMode)
 	{
 		GameMode->WrapAround(Position);
+	}
+
+	if (bDrawDebugLines)
+	{
+		DrawDebugCircle(
+			GetWorld(),
+			GetActorLocation(),
+			Radius,
+			32,
+			FColor(255, 0, 0),
+			false,
+			-1,
+			0,
+			3,
+			FVector(1, 0, 0),
+			FVector(0, 0, 1),
+			false
+		);
 	}
 	
 }
@@ -147,4 +166,3 @@ bool AMovementPlayer::SetActorLocation2D(const FVector2DPlus & NewLocation)
 	return SetActorLocation(FVector(Transform2D.X, 0.0f, Transform2D.Y), false);
 
 }
-

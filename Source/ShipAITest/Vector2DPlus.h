@@ -100,6 +100,15 @@ public:
 		return FVector2DPlus(X, Y);
 	}
 
+	static inline float Diagonal(float Width, float Height, float Adjustment = 0)
+	{
+		if (Adjustment)
+		{
+			Height += Adjustment;
+			Width += Adjustment;
+		}
+		return (FMath::Sqrt(FMath::Square(Width) + FMath::Square(Height)));
+	}
 
 };
 

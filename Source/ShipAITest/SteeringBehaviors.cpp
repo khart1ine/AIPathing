@@ -51,13 +51,13 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 		SteeringForce += (TargetArrive * WeightArrive);
 	}
 
-	if (CurrentBehavior == BehaviorTypes::Pursuit)
+	if (CurrentBehavior == BehaviorTypes::Pursuit && VehiclePtr->ReturnDynamicTargetPtr())
 	{
 		FVector2DPlus TargetArrive = Pursuit(VehiclePtr->ReturnDynamicTargetPtr());
 		SteeringForce += (TargetArrive * WeightPursuit);
 	}
 
-	if (CurrentBehavior == BehaviorTypes::Evade)
+	if (CurrentBehavior == BehaviorTypes::Evade && VehiclePtr->ReturnDynamicTargetPtr())
 	{
 		FVector2DPlus TargetArrive = Evade(VehiclePtr->ReturnDynamicTargetPtr());
 		SteeringForce += (TargetArrive * WeightEvade);
@@ -201,11 +201,11 @@ FVector2DPlus USteeringBehaviors::Pursuit(AMovementPlayer* DynamicTarget)
 										 0.0f,
 										(DynamicTarget->GetActorLocation2D() + DynamicTarget->Get2DVelocity() * LookAheadTime).Y);
 
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(31, .1f, FColor::Yellow, FString::Printf(TEXT("Player heading to future position: %f, %f"),
-			LocationDebugPoint.X, LocationDebugPoint.Z));
-	}
+	//if (GEngine)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(31, .1f, FColor::Yellow, FString::Printf(TEXT("Player heading to future position: %f, %f"),
+	//		LocationDebugPoint.X, LocationDebugPoint.Z));
+	//}
 	//now seek to the predicted future position of the evader
 	return Seek(DynamicTarget->GetActorLocation2D() + DynamicTarget->Get2DVelocity() * LookAheadTime);
 }
