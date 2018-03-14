@@ -23,12 +23,19 @@ void UBTService_CheckForBases::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 
 	if (ShipPC)
 	{
-		AThirdPersonTestCharacter *Base = Cast<AThirdPersonTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		AThirdPersonTestCharacter *Player = Cast<AThirdPersonTestCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+		AShipAITestPawn *FlyingPlayer = Cast<AShipAITestPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
-		if (Base)
+		if (Player)
 		{
-			OwnerComp.GetBlackboardComponent()->SetValue<UBlackboardKeyType_Object>(ShipPC->Base1ID, Base);
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Green, "Enemy is here!");
+			OwnerComp.GetBlackboardComponent()->SetValue<UBlackboardKeyType_Object>(ShipPC->PlayerID, Player);
+			GEngine->AddOnScreenDebugMessage(0, 2.f, FColor::Green, "Found ground unit");
+			
+		}
+		else if (FlyingPlayer)
+		{
+			OwnerComp.GetBlackboardComponent()->SetValue<UBlackboardKeyType_Object>(ShipPC->FlyingPlayerID, FlyingPlayer);
+			GEngine->AddOnScreenDebugMessage(0, 2.f, FColor::Green, "Found UFO");
 		}
 	}
 }

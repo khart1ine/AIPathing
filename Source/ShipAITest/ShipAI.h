@@ -25,7 +25,14 @@ public:
 	AShipAI();
 
 	virtual void Possess(APawn *InPawn) override;
+	virtual void BeginPlay();
+
+	int BaseHeading;
 	
+	uint8 PlayerID;
+	uint8 FlyingPlayerID;
 	uint8 Base1ID;
 	uint8 Base2ID;
+	uint8 Base3ID;
+	uint8 Base4ID;
 };

@@ -30,7 +30,7 @@ AShipAITestPawn::AShipAITestPawn()
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
 	SpringArm->SetupAttachment(RootComponent);	// Attach SpringArm to RootComponent
-	SpringArm->TargetArmLength = 160.0f; // The camera follows at this distance behind the character	
+	SpringArm->TargetArmLength = 300.0f; // The camera follows at this distance behind the character	
 	SpringArm->SocketOffset = FVector(0.f,0.f,60.f);
 	SpringArm->bEnableCameraLag = false;	// Do not allow camera to lag
 	SpringArm->CameraLagSpeed = 15.f;
@@ -44,8 +44,8 @@ AShipAITestPawn::AShipAITestPawn()
 	Acceleration = 500.f;
 	TurnSpeed = 50.f;
 	MaxSpeed = 4000.f;
-	MinSpeed = 500.f;
-	CurrentForwardSpeed = 500.f;
+	MinSpeed = 0.f;
+	CurrentForwardSpeed = 0.f;
 }
 
 void AShipAITestPawn::Tick(float DeltaSeconds)

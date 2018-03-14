@@ -7,6 +7,8 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "ShipCharacter.h"
 #include "ShipAITest.h"
+#include "EngineUtils.h"
+#include "Runtime/Engine/Classes/Engine/TargetPoint.h"
 
 AShipAI::AShipAI()
 {
@@ -25,10 +27,32 @@ void AShipAI::Possess(APawn *InPawn)
 	{
 		BlackboardComp->InitializeBlackboard(*Ship->ShipBehavior->BlackboardAsset);
 
+		PlayerID = BlackboardComp->GetKeyID("Player");
+		FlyingPlayerID = BlackboardComp->GetKeyID("FlyingPlayer");
+
 		Base1ID = BlackboardComp->GetKeyID("Base1");
 		Base2ID = BlackboardComp->GetKeyID("Base2");
+		Base3ID = BlackboardComp->GetKeyID("Base3");
+		Base4ID = BlackboardComp->GetKeyID("Base4");
+
+		BaseHeading = 0;
+
+		TActorIterator<ATargetPoint> ActorItr(GetWorld());
+		BlackboardComp->SetValue<UBlackboardKeyType_Object>(Base1ID, *ActorItr);
+		++ActorItr;
+		BlackboardComp->SetValue<UBlackboardKeyType_Object>(Base2ID, *ActorItr);
+		++ActorItr;
+		BlackboardComp->SetValue<UBlackboardKeyType_Object>(Base3ID, *ActorItr);
+		++ActorItr;
+		BlackboardComp->SetValue<UBlackboardKeyType_Object>(Base4ID, *ActorItr);
 
 		BehaviorComp->StartTree(*Ship->ShipBehavior);
+		RunBehaviorTree(Ship->ShipBehavior);
 	}
+}
+
+void AShipAI::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
