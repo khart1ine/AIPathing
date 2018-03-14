@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Actor2D.h"
 #include "Vector2DPlus.h"
+#include "PaperSpriteComponent.h"
 #include "MovementPlayer.generated.h"
 
 /**
@@ -25,6 +26,12 @@ class SHIPAITEST_API AMovementPlayer : public APawn
 	GENERATED_BODY()
 
 public:
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// Sets default values for this pawn's properties
 	AMovementPlayer();
 
@@ -48,6 +55,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "2DLocation")
 	bool SetActorLocation2D(const FVector2DPlus & NewLocation);
 
+	/** Returns the X & Y 2D Value for root location of component in AActor **/
+	UFUNCTION(BlueprintPure, Category = "2DLocation")
+		FORCEINLINE float GetRadius() const { return Radius; }
+
+
+	/** Sets the X and Y FVector 2D Value as well as the actual 3D location of AActor **/
+	UFUNCTION(BlueprintCallable, Category = "2DLocation")
+		void SetRadius(float R) { Radius = R; };
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -69,12 +85,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
 		float Friction;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperSprite", meta = (BlueprintProtect = "true"))
+	UPaperSpriteComponent * PaperSpriteComponent;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	/** Turn Debug Line Drawing from Actor to Steering Force **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
+	bool bDrawDebugLines;
+
+	/** Adjusts the radius of the collision volume for Steering Behaviors **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperSprite", meta = (AllowPrivateAccess = "true"))
+	float CollisionRadiusAdjustment;
 
 private:
 
@@ -112,6 +133,10 @@ private:
 	UPROPERTY()
 	class AMovementGameModeBase* GameMode;
 
+	/** Holds Radius of shape **/
+	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	float Radius;
+
 	/** Update inputs for horizontal axis**/
 	UFUNCTION()
 	void MovementRight(float AxisValue);
@@ -121,3 +146,4 @@ private:
 	void MovementUp(float AxisValue);
 	
 };
+

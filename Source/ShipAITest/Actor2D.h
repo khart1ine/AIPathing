@@ -31,14 +31,49 @@ public:
 	/** Sets the X and Y FVector 2D Value as well as the actual 3D location of AActor **/
 	UFUNCTION(BlueprintCallable, Category = "2DLocation")
 	bool SetActorLocation2D(const FVector2DPlus & NewLocation);
+	
+	/** Returns the X & Y 2D Value for root location of component in AActor **/
+	UFUNCTION(BlueprintPure, Category = "2DLocation")
+	FORCEINLINE float GetRadius() const { return Radius; }
+
+
+	/** Sets the X and Y FVector 2D Value as well as the actual 3D location of AActor **/
+	UFUNCTION(BlueprintCallable, Category = "2DLocation")
+	void SetRadius(float R) {Radius = R; };
+
+
+	/** Returns truthiness of AActor tag **/
+	UFUNCTION(BlueprintPure, Category = "Tag")
+		bool IsTagged()const { return bTag; }
+
+	/** Sets the X and Y FVector 2D Value as well as the actual 3D location of AActor **/
+	UFUNCTION(BlueprintCallable, Category = "2DLocation")
+		void TagTrue() { bTag = true; }
+
+	/** Sets the X and Y FVector 2D Value as well as the actual 3D location of AActor **/
+	UFUNCTION(BlueprintCallable, Category = "2DLocation")
+		void TagFalse() { bTag = false; }
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/** Holds Radius of shape **/
+	float Radius;
+	
+	/** Adjusts the radius of the collision volume for Steering Behaviors **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperSprite", meta = (AllowPrivateAccess = "true"))
+	float CollisionRadiusAdjustment;
+
+
 private:
 	/** Holds the 2D (X, Y) location of the Root Component, Redundant to 3-D X & Z **/
 	FVector2DPlus Transform2D;
 	
+	/** Generic tag used for collision detection for entities **/
+	bool bTag;
+
+
 	
 };

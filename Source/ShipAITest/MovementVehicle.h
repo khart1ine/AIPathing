@@ -6,6 +6,7 @@
 #include "Actor2D.h"
 #include "Vector2DPlus.h"
 #include "SteeringBehaviors.h"
+#include "PaperSpriteComponent.h"
 #include "MovementVehicle.generated.h"
 
 /**
@@ -113,6 +114,10 @@ protected:
 	/** Edit Wander Steering Behavior Settings **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrive SB", meta = (BlueprintProtect = "true"))
 	float DecelerationTweaker;
+
+	/** Add Sprite to AActor**/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperSprite", meta = (BlueprintProtect = "true"))
+	UPaperSpriteComponent * PaperSpriteComponent;
 	
 private:
 

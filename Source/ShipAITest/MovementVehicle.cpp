@@ -4,6 +4,7 @@
 #include "MovementGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "PaperSprite.h"
 #include "EngineGlobals.h"
 
 
@@ -29,6 +30,63 @@ AMovementVehicle::AMovementVehicle()
 	WanderRadius = 100.0f;
 	WanderJitter = 10.0f;
 	WanderDistance = 500.0f;
+
+	CollisionRadiusAdjustment = -32.0f;
+
+	//Setup Sprite SubObject
+	PaperSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Player Sprite"));
+	RootComponent = PaperSpriteComponent;
+}
+
+void AMovementVehicle::BeginPlay()
+{
+
+	Super::BeginPlay();
+
+
+	Steering = nullptr;
+
+	/** Create an instance of the Steering Behavior class **/
+	Steering = NewObject<USteeringBehaviors>();
+	if (Steering != nullptr)
+	{
+		//Send SteeringBehavior pointer to this vehicle
+		Steering->SetAgent(this);
+		//Sends the default behavior for this vehicle
+		Steering->SetCurrentBehavior(Behavior);
+		Steering->SetWanderDistance(WanderDistance);
+		Steering->SetWanderJitter(WanderJitter);
+		Steering->SetWanderRadius(WanderRadius);
+		Steering->SetLookAheadPursuit(LookAheadPursuit);
+		Steering->SetDecelerationTweeker(DecelerationTweaker);
+
+	}
+
+	//Puts current location in editor into the Location for the 2D Struct
+	Location2D = FVector2DPlus(0.0f, 0.0f);
+	Location2D.X = GetActorLocation().X;
+	Location2D.Y = GetActorLocation().Z;
+
+	//Zero out the actor's velocity
+	Velocity.Zero();
+
+	//Game Game mode base so we can access camera
+	AGameModeBase* GMB = UGameplayStatics::GetGameMode(this);
+
+	if (GMB)
+	{
+		GameMode = (AMovementGameModeBase *)GMB;
+	}
+
+	//Set default heading to pointing due east
+	Heading = FVector2DPlus(0.0f, 1.0f);
+
+	UPaperSprite* PaperSprite = PaperSpriteComponent->GetSprite();
+
+	if (PaperSprite)
+	{
+		Radius = FVector2DPlus::Diagonal(PaperSprite->GetSourceSize().X, PaperSprite->GetSourceSize().Y, CollisionRadiusAdjustment) / 2;
+	}
 }
 
 void AMovementVehicle::Tick(float DeltaTime)
@@ -94,6 +152,20 @@ void AMovementVehicle::Tick(float DeltaTime)
 	}
 	if (bDrawDebugLines)
 	{
+		DrawDebugCircle(
+			GetWorld(),
+			GetActorLocation(),
+			Radius,
+			32,
+			FColor(255, 0, 0),
+			false,
+			-1,
+			0,
+			3,
+			FVector(1, 0, 0),
+			FVector(0, 0, 1),
+			false
+		);
 		if (Behavior == BehaviorTypes::Flee || Behavior == BehaviorTypes::Evade
 			|| Behavior ==  BehaviorTypes::Seek || Behavior == BehaviorTypes::Pursuit
 			|| Behavior == BehaviorTypes::Arrive)
@@ -156,49 +228,3 @@ FVector2DPlus AMovementVehicle::GetTarget() const
 	}
 }
 
-void AMovementVehicle::BeginPlay()
-{
-
-	Super::BeginPlay();
-
-
-	Steering = nullptr;
-	
-	/** Create an instance of the Steering Behavior class **/
-	Steering = NewObject<USteeringBehaviors>();
-	if (Steering != nullptr)
-	{
-		//Send SteeringBehavior pointer to this vehicle
-		Steering->SetAgent(this);
-		//Sends the default behavior for this vehicle
-		Steering->SetCurrentBehavior(Behavior);
-		Steering->SetWanderDistance(WanderDistance);
-		Steering->SetWanderJitter(WanderJitter);
-		Steering->SetWanderRadius(WanderRadius);
-		Steering->SetLookAheadPursuit(LookAheadPursuit);
-		Steering->SetDecelerationTweeker(DecelerationTweaker);
-
-	}
-
-	//Puts current location in editor into the Location for the 2D Struct
-	Location2D = FVector2DPlus(0.0f, 0.0f);
-	Location2D.X = GetActorLocation().X;
-	Location2D.Y = GetActorLocation().Z;
-
-	//Zero out the actor's velocity
-	Velocity.Zero();
-
-	//Game Game mode base so we can access camera
-	AGameModeBase* GMB = UGameplayStatics::GetGameMode(this);
-
-	if (GMB)
-	{
-		GameMode = (AMovementGameModeBase *)GMB;
-	}
-
-	//Set default heading to pointing due east
-	Heading = FVector2DPlus(0.0f, 1.0f);
-
-
-
-}
