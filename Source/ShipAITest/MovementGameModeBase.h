@@ -63,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "FrustumExtents")
 	void WrapAround(FVector2DPlus &Pos, float Margin = 0);
 
+	UPROPERTY()
+	TArray<class AMovementObstacle *> ObstaclesPtr;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

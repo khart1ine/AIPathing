@@ -78,11 +78,14 @@ void AMovementGameModeBase::BeginPlay()
 
 }
 
-
 /** Screen wraps the actdor so they are always in view**/
 void AMovementGameModeBase::WrapAround(FVector2DPlus & Pos, float Margin)
 {
-	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(12, 15.0f, FColor::Green,
+				FString::Printf(TEXT("There are %d obstacles in the room"), ObstaclesPtr.Num()));
+		}
 		Frustum NewCamExtents = GetCameraExtents();
 		//Add margin delaying wrap if positive
 		if (Margin)
@@ -104,5 +107,4 @@ void AMovementGameModeBase::WrapAround(FVector2DPlus & Pos, float Margin)
 
 		//Screen wraps from bottom to top
 		if (Pos.Y < NewCamExtents.BottomCameraFrustum) { Pos.Y = NewCamExtents.TopCameraFrustum; }
-	}
 }
