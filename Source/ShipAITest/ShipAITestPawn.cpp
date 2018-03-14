@@ -16,7 +16,7 @@ AShipAITestPawn::AShipAITestPawn()
 	{
 		ConstructorHelpers::FObjectFinderOptional<UStaticMesh> PlaneMesh;
 		FConstructorStatics()
-			: PlaneMesh(TEXT("/Game/Flying/Meshes/UFO.UFO"))
+			: PlaneMesh(TEXT("/Game/Geometry/Meshes/UFO.UFO"))
 		{
 		}
 	};
