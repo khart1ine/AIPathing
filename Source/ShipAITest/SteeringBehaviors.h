@@ -23,13 +23,14 @@
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class BehaviorTypes : uint8
 {
-	None 	UMETA(DisplayName = "None"),
-	Seek	UMETA(DisplayName = "Seek"),
-	Flee	UMETA(DisplayName = "Flee"),
-	Arrive	UMETA(DisplayName = "Arrive"),
-	Pursuit UMETA(DisplayName = "Pursuit"),
-	Evade	UMETA(DisplayName = "Evade"),
-	Wander	UMETA(DisplayName = "Wander")
+	None				= 0x00000 	UMETA(DisplayName = "None"),
+	Seek				= 0x00002	UMETA(DisplayName = "Seek"),
+	Flee				= 0x00004	UMETA(DisplayName = "Flee"),
+	Arrive				= 0x00008 	UMETA(DisplayName = "Arrive"),
+	Pursuit				= 0x00010	UMETA(DisplayName = "Pursuit"),
+	Evade				= 0x00020	UMETA(DisplayName = "Evade"),
+	Wander				= 0x00040	UMETA(DisplayName = "Wander"),
+	ObstacleAvoidance	= 0x00080	UMETA(DisplayName = "Obastacle Avoidance")
 };
 
 UCLASS(Blueprintable)

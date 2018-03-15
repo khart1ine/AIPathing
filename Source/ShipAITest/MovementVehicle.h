@@ -61,6 +61,10 @@ public:
 	/** Returns the time since last frame in milliseconds **/
 	UFUNCTION(BlueprintPure, Category = "2DLocation")
 	FORCEINLINE float GetDeltaTime() const { return DeltaTimeForActor; }
+
+	/** Getting reference to gamemode for SteeringBehaviros**/
+	UFUNCTION(BlueprintPure, Category = "Target")
+	class AMovementGameModeBase* GetGameMode()const {return GameMode;}
 	
 protected:
 
