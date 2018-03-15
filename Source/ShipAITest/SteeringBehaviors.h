@@ -23,14 +23,14 @@
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
 enum class BehaviorTypes : uint8
 {
-	None				= 0x00000 	UMETA(DisplayName = "None"),
-	Seek				= 0x00002	UMETA(DisplayName = "Seek"),
-	Flee				= 0x00004	UMETA(DisplayName = "Flee"),
-	Arrive				= 0x00008 	UMETA(DisplayName = "Arrive"),
-	Pursuit				= 0x00010	UMETA(DisplayName = "Pursuit"),
-	Evade				= 0x00020	UMETA(DisplayName = "Evade"),
-	Wander				= 0x00040	UMETA(DisplayName = "Wander"),
-	ObstacleAvoidance	= 0x00080	UMETA(DisplayName = "Obastacle Avoidance")
+	None 				UMETA(DisplayName = "None"),
+	Seek				UMETA(DisplayName = "Seek"),
+	Flee				UMETA(DisplayName = "Flee"),
+	Arrive				UMETA(DisplayName = "Arrive"),
+	Pursuit				UMETA(DisplayName = "Pursuit"),
+	Evade				UMETA(DisplayName = "Evade"),
+	Wander				UMETA(DisplayName = "Wander"),
+	ObstacleAvoidance	UMETA(DisplayName = "Obastacle Avoidance")
 };
 
 UCLASS(Blueprintable)
@@ -40,8 +40,6 @@ class SHIPAITEST_API USteeringBehaviors : public UObject
 	
 public:
 	
-	/** Change the current behavior being exhibited by actor **/
-	void SetCurrentBehavior(BehaviorTypes NewBehavior) { CurrentBehavior = NewBehavior; }
 
 	USteeringBehaviors();
 	/**  Calculates and sums the sterring forces from any active behaviors **/
@@ -74,7 +72,35 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Pursuit and Evade SB")
 	void SetDecelerationTweeker(float Decelerate) { DecelerationTweaker = Decelerate; }
 
+	UFUNCTION(BlueprintCallable, Category = "Weights")
+	void SetBehaviorWeights(BehaviorTypes BT, float Amount);
 
+	/** set binary flags on**/
+	void SeekOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Seek); }
+	void FleeOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Flee); }
+	void ArriveOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Arrive); }
+	void PursuitOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Pursuit); }
+	void EvadeOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Evade); }
+	void WanderOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Wander); }
+	void ObstacleAvoidanceOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance); }
+
+	/** set binary flags off  **/
+	void SeekOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Seek)); }
+	void FleeOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Flee)); }
+	void ArriveOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Arrive)); }
+	void PursuitOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Pursuit)); }
+	void EvadeOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Evade)); }
+	void WanderOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Wander)); }
+	void ObstacleAvoidanceOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance)); }
+
+	/** Check if binary flag is on **/
+	bool IsSeekOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Seek)); }
+	bool IsFleeOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Flee)); }
+	bool IsArriveOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Arrive)); }
+	bool IsPursuitOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Pursuit)); }
+	bool IsEvadeOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Evade)); }
+	bool IsWanderOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Wander)); }
+	bool IsObstacleAvoidanceOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance)); }
 	
 private:
 
@@ -108,15 +134,16 @@ private:
 	float WeightArrive;
 	float WeightPursuit;
 	float WeightEvade;
+	float WeightWander;
 	float WanderJitter;
 	float DecelerationTweaker; //range between .3 and 1 to slow deceleration for Arrive SB
 	float LookAheadPursuit; // how far in front of the player's vector should the vehicle target 
 
+	/** bitmask for holding which behaviors should be active**/
+	UINT32 BehaviorFlags;
+
 	//Calculates and sums the sterring forces from any active behaviors
 	FVector2DPlus CalculateWeightedSum();
-
-	//Stores current behavior
-	BehaviorTypes CurrentBehavior = BehaviorTypes::Seek;
 
 	/* ......................................................................
 

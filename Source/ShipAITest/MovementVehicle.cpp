@@ -27,15 +27,30 @@ AMovementVehicle::AMovementVehicle()
 
 	bDrawDebugLines = false;
 
+	/** Wander & Evade Behavior **/
 	WanderRadius = 100.0f;
-	WanderJitter = 10.0f;
-	WanderDistance = 500.0f;
+	WanderJitter = 1000.0f;
+	WanderDistance = 200.0f;
+	LookAheadPursuit = 2.0f;
+
+	/** Arrive Behavior **/
+	DecelerationTweaker = 3;
+
 
 	CollisionRadiusAdjustment = -32.0f;
 
 	//Setup Sprite SubObject
 	PaperSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Player Sprite"));
 	RootComponent = PaperSpriteComponent;
+
+	/** Default settings for Behavior Types weights**/
+	WeightSeek = 1.0f;
+	WeightFlee = 1.0f;
+	WeightArrive = 1.0f;
+	WeightPursuit = 1.0f;
+	WeightEvade = 1.0f;
+	WeightWander = 1.0f;
+	WeightObstacleAvoidance = 1.0f;
 }
 
 void AMovementVehicle::BeginPlay()
@@ -53,13 +68,29 @@ void AMovementVehicle::BeginPlay()
 		//Send SteeringBehavior pointer to this vehicle
 		Steering->SetAgent(this);
 		//Sends the default behavior for this vehicle
-		Steering->SetCurrentBehavior(Behavior);
 		Steering->SetWanderDistance(WanderDistance);
 		Steering->SetWanderJitter(WanderJitter);
 		Steering->SetWanderRadius(WanderRadius);
 		Steering->SetLookAheadPursuit(LookAheadPursuit);
 		Steering->SetDecelerationTweeker(DecelerationTweaker);
 
+		/** Turn on and off behavior flags that are set in editor**/
+		(bSeek)					? Steering->SeekOn() : Steering->SeekOff();
+		(bFlee)					? Steering->FleeOn() : Steering->FleeOff();
+		(bArrive)				? Steering->ArriveOn() : Steering->ArriveOff();
+		(bPursuit)				? Steering->PursuitOn() : Steering->PursuitOff();
+		(bEvade)				? Steering->EvadeOn() : Steering->EvadeOff();
+		(bWander)				? Steering->WanderOn() : Steering->WanderOff();
+		(bObstacleAvoidance)	? Steering->ObstacleAvoidanceOn() : Steering->ObstacleAvoidanceOff();
+
+		/** Set Weights **/
+		Steering->SetBehaviorWeights(BehaviorTypes::Seek, WeightSeek);
+		Steering->SetBehaviorWeights(BehaviorTypes::Flee, WeightFlee);
+		Steering->SetBehaviorWeights(BehaviorTypes::Arrive, WeightArrive);
+		Steering->SetBehaviorWeights(BehaviorTypes::Pursuit, WeightPursuit);
+		Steering->SetBehaviorWeights(BehaviorTypes::Evade, WeightEvade);
+		Steering->SetBehaviorWeights(BehaviorTypes::Wander, WeightWander);
+		Steering->SetBehaviorWeights(BehaviorTypes::ObstacleAvoidance, WeightObstacleAvoidance);
 	}
 
 	//Puts current location in editor into the Location for the 2D Struct
@@ -166,9 +197,9 @@ void AMovementVehicle::Tick(float DeltaTime)
 			FVector(0, 0, 1),
 			false
 		);
-		if (Behavior == BehaviorTypes::Flee || Behavior == BehaviorTypes::Evade
-			|| Behavior ==  BehaviorTypes::Seek || Behavior == BehaviorTypes::Pursuit
-			|| Behavior == BehaviorTypes::Arrive)
+		if (Steering->IsFleeOn() || Steering->IsEvadeOn()
+			|| Steering->IsSeekOn() || Steering->IsPursuitOn()
+			|| Steering->IsArriveOn())
 		{
 			DrawDebugLine(
 							GetWorld(),
@@ -182,7 +213,7 @@ void AMovementVehicle::Tick(float DeltaTime)
 			);
 		}
 
-		if (Behavior == BehaviorTypes::Wander)
+		if (Steering->IsWanderOn())
 		{
 			DrawDebugCircle(
 				GetWorld(),

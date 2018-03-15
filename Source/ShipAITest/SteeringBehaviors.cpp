@@ -33,40 +33,40 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 	//SteeringForce.x = 0;
 	//SteeringForce.y = 0;
 
-	if (CurrentBehavior == BehaviorTypes::Seek)
+	if (IsSeekOn())
 	{
 		FVector2DPlus TargetSeek = Seek(VehiclePtr->GetTarget());
 		SteeringForce += (TargetSeek * WeightSeek);
 	}
 
-	if (CurrentBehavior == BehaviorTypes::Flee)
+	if (IsFleeOn())
 	{
 		FVector2DPlus TargetFlee = Flee(VehiclePtr->GetTarget());
 		SteeringForce += (TargetFlee * WeightFlee);
 	}
 
-	if (CurrentBehavior == BehaviorTypes::Arrive)
+	if (IsArriveOn())
 	{
 		FVector2DPlus TargetArrive = Arrive(VehiclePtr->GetTarget());
 		SteeringForce += (TargetArrive * WeightArrive);
 	}
 
-	if (CurrentBehavior == BehaviorTypes::Pursuit && VehiclePtr->ReturnDynamicTargetPtr())
+	if (IsPursuitOn() && VehiclePtr->ReturnDynamicTargetPtr())
 	{
 		FVector2DPlus TargetArrive = Pursuit(VehiclePtr->ReturnDynamicTargetPtr());
 		SteeringForce += (TargetArrive * WeightPursuit);
 	}
 
-	if (CurrentBehavior == BehaviorTypes::Evade && VehiclePtr->ReturnDynamicTargetPtr())
+	if (IsEvadeOn() && VehiclePtr->ReturnDynamicTargetPtr())
 	{
 		FVector2DPlus TargetArrive = Evade(VehiclePtr->ReturnDynamicTargetPtr());
 		SteeringForce += (TargetArrive * WeightEvade);
 	}
 
-	if (CurrentBehavior == BehaviorTypes::Wander)
+	if (IsWanderOn() )
 	{
 		FVector2DPlus TargetArrive = Wander();
-		SteeringForce += TargetArrive;
+		SteeringForce += TargetArrive * WeightWander;
 	}
 
 	SteeringForce.Truncate(VehiclePtr->GetMaxForce());
@@ -92,6 +92,37 @@ void USteeringBehaviors::SetAgent(AMovementVehicle* NewVehiclePtr)
 	else
 	{
 		VehiclePtr = nullptr;
+	}
+}
+
+void USteeringBehaviors::SetBehaviorWeights(BehaviorTypes BT, float Amount)
+{
+	switch(BT)
+	{
+	case BehaviorTypes::Seek:
+		WeightSeek = Amount;
+		break;
+
+	case BehaviorTypes::Flee:
+		WeightFlee = Amount;
+		break;
+
+	case BehaviorTypes::Arrive:
+		WeightArrive = Amount;
+		break;
+
+	case BehaviorTypes::Pursuit:
+		WeightPursuit = Amount;
+		break;
+
+	case BehaviorTypes::Evade:
+		WeightEvade = Amount;
+		break;
+
+	case BehaviorTypes::Wander:
+		WeightWander = Amount;
+		break;
+
 	}
 }
  
