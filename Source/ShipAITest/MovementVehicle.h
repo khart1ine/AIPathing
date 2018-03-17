@@ -32,11 +32,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//Inherits GetActorLocation2D() rom parent
-
 	/** Returns the maximum magnitude of the player's allowed velocity **/
 	UFUNCTION(BlueprintPure, Category = "2DLocation")
 	inline float GetMaxSpeed()const { return MaxSpeed; }
+
+	/** Returns the maximum magnitude of the player's allowed velocity **/
+	UFUNCTION(BlueprintPure, Category = "2DLocation")
+	inline float GetSpeed()const { return Speed; }
 
 	/** Gets current 2D velocity vector **/
 	UFUNCTION(BlueprintPure, Category = "Movement")
@@ -65,6 +67,17 @@ public:
 	/** Getting reference to gamemode for SteeringBehaviros**/
 	UFUNCTION(BlueprintPure, Category = "Target")
 	class AMovementGameModeBase* GetGameMode()const {return GameMode;}
+
+	/** Getting reference to gamemode holding obstacle TArray **/
+	UFUNCTION(BlueprintCallable, Category = "ObstaclesRef")
+	TArray<class AMovementObstacle *>&  GetGameModeObstacles()const;
+
+	/** Turn Debug Line Drawing from Actor to Steering Force **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
+	bool bDrawDebugLines;
+	/** Getting reference to gamemode holding obstacle TArray **/
+	UFUNCTION(BlueprintCallable, Category = "ObstaclesRef")
+	void  PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor Color )const;
 	
 protected:
 
@@ -92,10 +105,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
 		float Mass;
 
-	/** Turn Debug Line Drawing from Actor to Steering Force **/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
-	bool bDrawDebugLines;
-
 	/** Edit Wander Steering Behavior Settings **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wander SB", meta = (BlueprintProtect = "true"))
 	float WanderJitter;
@@ -120,22 +129,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperSprite", meta = (BlueprintProtect = "true"))
 	UPaperSpriteComponent * PaperSpriteComponent;
 
-	/** Set bits to turn on and off behaviors **/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	bool bSeek;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	bool bFlee;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	bool bArrive;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	bool bPursuit;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	bool bEvade;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	bool bWander;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	bool bObstacleAvoidance;
-
 	/** Set bits for weights **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
 	float WeightSeek;
@@ -151,6 +144,10 @@ protected:
 	float WeightWander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
 	float WeightObstacleAvoidance;
+
+	/** Set bits to turn on and off behaviors **/
+	UPROPERTY(EditAnywhere, Category = "Steering Behaviors", meta = (Bitmask, BitmaskEnum = "BehaviorTypes"))
+		uint32 BehaviorFlags;
 
 private:
 
@@ -168,7 +165,7 @@ private:
 
 	/**a normalized vector pointing in the direction that the actor is heading  **/
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
-		float Speed;
+	float Speed;
 
 	/** time in miliseconds from last frame **/
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
@@ -181,6 +178,5 @@ private:
 	/** Holds the game mode so player can reference camera **/
 	UPROPERTY()
 	class AMovementGameModeBase* GameMode;
-
 	
 };

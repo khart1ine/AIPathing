@@ -53,6 +53,28 @@ AMovementVehicle::AMovementVehicle()
 	WeightObstacleAvoidance = 1.0f;
 }
 
+TArray<class AMovementObstacle*>& AMovementVehicle::GetGameModeObstacles() const
+{
+	return GameMode->ObstaclesPtr;
+}
+
+void AMovementVehicle::PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor Color) const
+{
+		//FVector Start = (GetActorForwardVector() * Radius) + GetActorLocation();
+	FVector Start = GetActorLocation();
+	End *= DeltaTimeForActor * 10.0f ;
+		DrawDebugLine(
+						GetWorld(),
+						FVector(Start.X, 0.0f, Start.Z),
+						FVector(Start.X + End.X, 0.0F, Start.Z + End.Y),
+						Color,  
+						false,  //not persistent ( goes away)
+						-1,
+						0,
+						2	//thickness
+		);
+}
+
 void AMovementVehicle::BeginPlay()
 {
 
@@ -75,13 +97,7 @@ void AMovementVehicle::BeginPlay()
 		Steering->SetDecelerationTweeker(DecelerationTweaker);
 
 		/** Turn on and off behavior flags that are set in editor**/
-		(bSeek)					? Steering->SeekOn() : Steering->SeekOff();
-		(bFlee)					? Steering->FleeOn() : Steering->FleeOff();
-		(bArrive)				? Steering->ArriveOn() : Steering->ArriveOff();
-		(bPursuit)				? Steering->PursuitOn() : Steering->PursuitOff();
-		(bEvade)				? Steering->EvadeOn() : Steering->EvadeOff();
-		(bWander)				? Steering->WanderOn() : Steering->WanderOff();
-		(bObstacleAvoidance)	? Steering->ObstacleAvoidanceOn() : Steering->ObstacleAvoidanceOff();
+		Steering->SetBehaviorFlags(BehaviorFlags);
 
 		/** Set Weights **/
 		Steering->SetBehaviorWeights(BehaviorTypes::Seek, WeightSeek);
@@ -125,6 +141,7 @@ void AMovementVehicle::Tick(float DeltaTime)
 
 	Super::Tick(DeltaTime);
 
+	//Delta Time requied by outside function
 	DeltaTimeForActor = DeltaTime;
 	
 	//Stores the upcoming force required by the vehicle
@@ -152,8 +169,9 @@ void AMovementVehicle::Tick(float DeltaTime)
 	//Update location accounting fro time since last from last frame
 	Location2D += Velocity * DeltaTime;
 
-	//Sets Speed so we can see it in Unreal, can be removed if used in game as it does nothing
+	//Sets Speed so we can see it in Unreal Editor, can be removed if used in game as it does nothing
 	Speed = Velocity.Size();
+
 	//Updates Location of actor
 	SetActorLocation2D(Location2D);
 
@@ -188,7 +206,7 @@ void AMovementVehicle::Tick(float DeltaTime)
 			GetActorLocation(),
 			Radius,
 			32,
-			FColor(255, 0, 0),
+			FColor(100, 200, 100),
 			false,
 			-1,
 			0,
@@ -197,21 +215,6 @@ void AMovementVehicle::Tick(float DeltaTime)
 			FVector(0, 0, 1),
 			false
 		);
-		if (Steering->IsFleeOn() || Steering->IsEvadeOn()
-			|| Steering->IsSeekOn() || Steering->IsPursuitOn()
-			|| Steering->IsArriveOn())
-		{
-			DrawDebugLine(
-							GetWorld(),
-							GetActorLocation(),
-							FVector(SteeringForce.X + GetActorLocation2D().X, 0.0f, SteeringForce.Y + GetActorLocation2D().Y),
-							FColor(255, 0, 255),  //pink
-							false,  				//persistent (never goes away)
-							-1,
-							0,
-							5//point leaves a trail on moving object
-			);
-		}
 
 		if (Steering->IsWanderOn())
 		{
@@ -236,7 +239,7 @@ void AMovementVehicle::Tick(float DeltaTime)
 				GetWorld(),
 				(GetActorForwardVector()*WanderDistance) + GetActorLocation(),
 				FVector(TargetX, 0.0f, TargetY),
-				FColor(0, 255, 0),
+				FColor(100, 100, 0),
 				false,
 				-1,
 				0,

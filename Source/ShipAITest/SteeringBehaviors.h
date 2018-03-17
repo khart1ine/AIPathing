@@ -75,6 +75,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weights")
 	void SetBehaviorWeights(BehaviorTypes BT, float Amount);
 
+	UFUNCTION(Category = "BehaviorFlag")
+	void SetBehaviorFlags(uint32 BF){BehaviorFlags = BF;}
+
 	/** set binary flags on**/
 	void SeekOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Seek); }
 	void FleeOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Flee); }
@@ -104,6 +107,9 @@ public:
 	
 private:
 
+	/** bitmask for holding which behaviors should be active**/
+	uint32 BehaviorFlags;
+
 	//For drawing debug of internal target of Steering Behaviors
 	FVector2DPlus SBDebugTarget;
 	
@@ -125,6 +131,10 @@ private:
 	/** Distance of circle from player **/
 	float WanderDistance;
 
+
+	//length of the 'detection box' utilized in obstacle avoidance
+	float DBoxLength;
+
 	//Multipliers that can be adjusted to affect strength of the 
 	//appropriate behavior.  Useful to get flocking the way you require
 	//for example
@@ -135,12 +145,10 @@ private:
 	float WeightPursuit;
 	float WeightEvade;
 	float WeightWander;
+	float WeightObstacleAvoidance;
 	float WanderJitter;
 	float DecelerationTweaker; //range between .3 and 1 to slow deceleration for Arrive SB
 	float LookAheadPursuit; // how far in front of the player's vector should the vehicle target 
-
-	/** bitmask for holding which behaviors should be active**/
-	UINT32 BehaviorFlags;
 
 	//Calculates and sums the sterring forces from any active behaviors
 	FVector2DPlus CalculateWeightedSum();
@@ -168,6 +176,10 @@ private:
 
 	/**  This behavior makes the agent wander about randomly **/
 	FVector2DPlus Wander();
+
+	/** this returns a steering force which will attempt to keep the agent 
+		away from any obstacles it may encounter **/
+	FVector2DPlus ObstacleAvoidance(const TArray<class AMovementObstacle *>& Obstacles);
 
 };
 

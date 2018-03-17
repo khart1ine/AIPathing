@@ -14,8 +14,8 @@ AMovementPlayer::AMovementPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	//Set Default variable values
-	MaxPlayerSpeed = 50.0f;
-	Force = 20.0f;
+	MaxPlayerSpeed = 200.0f;
+	Force = 150.0f;
 	MaxTurnSpeed = 150.0f;
 	Friction = 5.0f;
 	Rotation = 0.0f;

@@ -5,6 +5,7 @@
 #include "Camera/CameraActor.h"
 #include "EngineUtils.h"
 #include "Camera/CameraComponent.h"
+#include "MovementObstacle.h"
 
 // Sets default values for this actor's properties
 AMovementGameModeBase::AMovementGameModeBase()
@@ -81,11 +82,6 @@ void AMovementGameModeBase::BeginPlay()
 /** Screen wraps the actdor so they are always in view**/
 void AMovementGameModeBase::WrapAround(FVector2DPlus & Pos, float Margin)
 {
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(12, 15.0f, FColor::Green,
-				FString::Printf(TEXT("There are %d obstacles in the room"), ObstaclesPtr.Num()));
-		}
 		Frustum NewCamExtents = GetCameraExtents();
 		//Add margin delaying wrap if positive
 		if (Margin)
@@ -107,4 +103,30 @@ void AMovementGameModeBase::WrapAround(FVector2DPlus & Pos, float Margin)
 
 		//Screen wraps from bottom to top
 		if (Pos.Y < NewCamExtents.BottomCameraFrustum) { Pos.Y = NewCamExtents.TopCameraFrustum; }
+}
+
+void AMovementGameModeBase:: TagNeighbors(AMovementVehicle * VehiclePtr, const float radius)
+{
+
+	//iterate through all entities checking for range
+	//for (it = others.begin(); it != others.end(); ++it)
+	for (auto& Ob : ObstaclesPtr)
+	{
+		//first clear any current tag
+		Ob->TagFalse();
+
+		//work in distance squared to avoid sqrts
+		FVector2DPlus To = Ob->GetActorLocation2D() - VehiclePtr->GetActorLocation2D();
+
+		//the bounding radius of the other is taken into account by adding it 
+		//to the range
+		float Range = radius + Ob->GetRadius();
+
+		//if entity within range, tag for further consideration
+		if (To.SizeSquared() < Range*Range)
+		{
+			Ob->TagTrue();
+		}
+
+	}//next entity
 }

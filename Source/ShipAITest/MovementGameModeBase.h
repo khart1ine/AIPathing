@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Vector2DPlus.h"
+#include "MovementVehicle.h"
 #include "MovementGameModeBase.generated.h"
 
 /**
@@ -65,6 +66,10 @@ public:
 
 	UPROPERTY()
 	TArray<class AMovementObstacle *> ObstaclesPtr;
+
+	UFUNCTION()
+	void TagNeighbors(AMovementVehicle* VehiclePtr, const float radius);
+
 
 protected:
 	// Called when the game starts or when spawned

@@ -44,15 +44,15 @@ public:
 
 	/** Returns truthiness of AActor tag **/
 	UFUNCTION(BlueprintPure, Category = "Tag")
-		bool IsTagged()const { return bTag; }
+	bool IsTagged()const { return bTag; }
 
 	/** Sets the X and Y FVector 2D Value as well as the actual 3D location of AActor **/
 	UFUNCTION(BlueprintCallable, Category = "2DLocation")
-		void TagTrue() { bTag = true; }
+	void TagTrue() { bTag = true; }
 
 	/** Sets the X and Y FVector 2D Value as well as the actual 3D location of AActor **/
 	UFUNCTION(BlueprintCallable, Category = "2DLocation")
-		void TagFalse() { bTag = false; }
+	void TagFalse() { bTag = false; }
 
 
 protected:
