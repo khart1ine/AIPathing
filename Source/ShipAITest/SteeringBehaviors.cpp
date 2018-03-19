@@ -10,6 +10,7 @@
 #include "Math/NumericLimits.h"
 #include "MovementObstacle.h"
 #include "DrawDebugHelpers.h"
+#include "MovementWalls.h"
 
 //Set default variables
 USteeringBehaviors::USteeringBehaviors()
@@ -31,6 +32,8 @@ USteeringBehaviors::USteeringBehaviors()
 
 	//Delete after debugging
 	SBDebugTarget = FVector2DPlus (0.0f,0.0f);
+
+	WallDetectionFeelerLength = 50.0f;
 }	
 
 //Returns pure average of all behaviors
@@ -38,8 +41,8 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 {
 	if (IsWallAvoidanceOn())
 	{
-	//	SteeringForce += WallAvoidance(m_pVehicle->World()->Walls()) *
-		//	WeightWallAvoidance;
+		SteeringForce += WallAvoidance(VehiclePtr->GetGameModeWalls()) *
+			WeightWallAvoidance;
 	}
 
 	if (IsObstacleAvoidanceOn())
@@ -458,4 +461,52 @@ FVector2DPlus USteeringBehaviors::ObstacleAvoidance(const TArray<class AMovement
 	}
 	
 }
+
+//--------------------------- WallAvoidance -------------------------------------
+//
+//  Returns a steering force that keeps the agent away from the suface of the wall
+// that it encounters
+//------------------------------------------------------------------------
+FVector2DPlus USteeringBehaviors::WallAvoidance(const TArray<FWallType> &walls)
+{
+	CreateFeelers();
+	if (GEngine)
+	{
+	GEngine->AddOnScreenDebugMessage(10, 15.0f, FColor::Green, 
+		FString::Printf(TEXT("WallAvoidance")));
+	}
+
+
+	if (VehiclePtr->bDrawDebugLines) 
+	{
+		for (auto& Feeler : Feelers)
+		{
+			VehiclePtr->PrintDebugLineFromPlayerOrigin(
+			Feeler, FColor(0, 50, 0));
+		}
+	}
+
+	return FVector2DPlus(0.0f, 0.0f);
+}
 	
+//--------------------------- CreateFeelers -------------------------------------
+//
+//  Creates the antenna utilized by the vehicle for the wall avoidance behavior 
+//------------------------------------------------------------------------
+void USteeringBehaviors::CreateFeelers()
+{
+	FVector2DPlus Temp = FVector2DPlus(VehiclePtr->GetActorForwardVector().X, VehiclePtr->GetActorForwardVector().Z);
+
+	//Feeler straight in front
+	//FVector2DPlus Feeler = Temp = VehiclePtr->GetHeading();
+	Feelers.Add(Temp * WallDetectionFeelerLength + VehiclePtr->GetActorLocation2D());
+
+	//Feeler to left
+//	Temp -= 90.f;
+	//Feelers.AddUnique(FVector2DPlus (VehiclePtr->GetActorLocation2D() + WallDetectionFeelerLength / 2.0f * Temp));
+
+	//Feller to right
+//	Temp += 180.0f;
+	//Feelers.AddUnique(FVector2DPlus (VehiclePtr->GetActorLocation2D() + WallDetectionFeelerLength/2.0f * Temp));
+
+}

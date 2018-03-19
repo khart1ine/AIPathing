@@ -3,6 +3,7 @@
 #include "MovementWalls.h"
 #include "PaperSprite.h"
 #include "DrawDebugHelpers.h"
+#include "MovementGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -55,13 +56,21 @@ void AMovementWalls::BeginPlay()
 		/** Project from edge to bottom corners and convert to world coordinates**/
 		BottomLeft = FVector2DPlus(GetActorUpVector().X * -Extent.Y, GetActorUpVector().Z * -Extent.Y) + LeftExtent + GetActorLocation2D();
 		BottomRight = FVector2DPlus(GetActorUpVector().X * -Extent.Y, GetActorUpVector().Z * -Extent.Y) + RightExtent + GetActorLocation2D();
+		
+		/** Calculate normals of line **/
+		WallNormalTop = FVector2DPlus::Perp(TopRight - TopLeft);
+		WallNormalTop.Normalize();
+		WallNormalLeft = FVector2DPlus::Perp(TopLeft - BottomLeft);
+		WallNormalLeft.Normalize();
+		WallNormalBottom = FVector2DPlus::Reverse(WallNormalTop);
+		WallNormalRight = FVector2DPlus::Reverse(WallNormalLeft);
 
 	}
 
 	if (GameMode)
 	{
 		//FWallType Line1 = FWallType(
-		//GameMode->WallsPtr.AddUnique(TopLeft, TopRight, this);
+		GameMode->WallsPtr.Add(FWallType(TopLeft, TopRight, WallNormalTop, this));
 	}
 
 }
@@ -75,6 +84,10 @@ void AMovementWalls::Tick(float DeltaTime)
 		PrintDebug(TopLeft, BottomLeft);
 		PrintDebug(BottomLeft, BottomRight);
 		PrintDebug(TopRight, BottomRight);
+		PrintDebug(GetActorLocation2D(), WallNormalTop * 20 + GetActorLocation2D());
+		PrintDebug(GetActorLocation2D(), WallNormalLeft * 20 + GetActorLocation2D());
+		PrintDebug(GetActorLocation2D(), WallNormalBottom * 20 + GetActorLocation2D());
+		PrintDebug(GetActorLocation2D(), WallNormalRight * 20 + GetActorLocation2D());
 	}
 }
 

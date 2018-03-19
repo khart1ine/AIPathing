@@ -59,6 +59,12 @@ TArray<class AMovementObstacle*>& AMovementVehicle::GetGameModeObstacles() const
 	return GameMode->ObstaclesPtr;
 }
 
+TArray<struct FWallType>& AMovementVehicle::GetGameModeWalls() const
+{
+	return GameMode->WallsPtr;
+}
+
+
 void AMovementVehicle::PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor Color) const
 {
 		//FVector Start = (GetActorForwardVector() * Radius) + GetActorLocation();

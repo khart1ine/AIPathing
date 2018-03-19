@@ -15,7 +15,7 @@ struct FWallType
 	
 public:
 	FWallType() { LineBegin = FVector2DPlus(); LineEnd =FVector2DPlus(); LineNormal = FVector2DPlus(); WallsRef = nullptr; }
-	FWallType(FVector2DPlus LB, FVector2DPlus LE, FVector2DPlus LN, class AMovementWalls* WR)
+	FWallType(FVector2DPlus LB, FVector2DPlus LE, FVector2DPlus LN,  class AMovementWalls* WR)
 	{
 		LineBegin = LB;
 		LineEnd = LE;
@@ -77,6 +77,10 @@ private:
 	FVector2DPlus TopRight;
 	FVector2DPlus BottomLeft;
 	FVector2DPlus BottomRight;
+	FVector2DPlus WallNormalTop;
+	FVector2DPlus WallNormalLeft;
+	FVector2DPlus WallNormalRight;
+	FVector2DPlus WallNormalBottom;
 
 	void PrintDebug(FVector2DPlus Start, FVector2DPlus End);
 };

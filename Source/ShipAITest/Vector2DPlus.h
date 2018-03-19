@@ -67,6 +67,16 @@ public:
 		return Normalized;
 	}
 
+	//----------------------- GetReverse ----------------------------------------
+	//
+	//  returns the vector that is the reverse of this vector
+	//------------------------------------------------------------------------
+	static inline FVector2DPlus Reverse(FVector2DPlus VecIn)
+	{
+		return FVector2DPlus(-VecIn.X, -VecIn.Y);
+	}
+
+
 	/*........................GetVectorFromAngleInDegrees.........................................
 
 	Returns a normalized vector when passed in an angle in degrees
@@ -100,9 +110,9 @@ public:
 	//
 	//  Returns a vector perpendicular to this vector
 	//------------------------------------------------------------------------
-	inline FVector2DPlus  Perp()const
+	static inline FVector2DPlus  Perp(FVector2DPlus VecIn)
 	{
-		return FVector2DPlus(-Y, X);
+		return FVector2DPlus(-VecIn.Y, VecIn.X);
 	}
 
 

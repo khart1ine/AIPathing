@@ -72,6 +72,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ObstaclesRef")
 	TArray<class AMovementObstacle *>&  GetGameModeObstacles()const;
 
+	/** Getting reference to gamemode holding walls TArray **/
+	UFUNCTION(BlueprintCallable, Category = "WallsRef")
+	TArray<struct FWallType>&  GetGameModeWalls()const;
+
 	/** Turn Debug Line Drawing from Actor to Steering Force **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
 	bool bDrawDebugLines;

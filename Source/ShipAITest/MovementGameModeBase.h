@@ -63,7 +63,7 @@ public:
 
 	/** Containts references and for FWallType struct for Walls in level**/
 	UPROPERTY()
-	TArray<class AMovementWalls *> WallsPtr;
+	TArray<FWallType> WallsPtr;
 
 	/** Returns extent of current camera view **/
 	UFUNCTION(BlueprintCallable, Category = "FrustumExtents")

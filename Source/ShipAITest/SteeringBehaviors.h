@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Vector2DPlus.h"
+#include "MovementWalls.h"
 #include "SteeringBehaviors.generated.h"
 
 
@@ -155,8 +156,17 @@ private:
 	float DecelerationTweaker; //range between .3 and 1 to slow deceleration for Arrive SB
 	float LookAheadPursuit; // how far in front of the player's vector should the vehicle target 
 
+	/** Length of Feelers for wall detector **/
+	float WallDetectionFeelerLength;
+
 	//Calculates and sums the sterring forces from any active behaviors
 	FVector2DPlus CalculateWeightedSum();
+
+	/** A list of feelers used by vehicle for the wall avoidance behavior**/
+	TArray<FVector2DPlus> Feelers;
+
+	//Creates the antenna utilized by the vehicle for the wall avoidance behavior
+	void CreateFeelers();
 
 	/* ......................................................................
 
@@ -186,6 +196,8 @@ private:
 		away from any obstacles it may encounter **/
 	FVector2DPlus ObstacleAvoidance(const TArray<class AMovementObstacle *>& Obstacles);
 
+	/** this retunrs a steering force which will keep the agent away from walls**/
+	FVector2DPlus WallAvoidance(const TArray<FWallType> &walls);
 };
 
  /** Returns the smaller of 2 floats, couldn't find this in Unreal's math libraries **/
