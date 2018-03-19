@@ -35,4 +35,6 @@ public:
 	uint8 Base2ID;
 	uint8 Base3ID;
 	uint8 Base4ID;
+	uint8 LastKnownBaseID;
+	bool bFollowingPlayer;
 };

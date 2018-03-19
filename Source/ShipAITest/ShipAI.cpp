@@ -34,6 +34,8 @@ void AShipAI::Possess(APawn *InPawn)
 		Base2ID = BlackboardComp->GetKeyID("Base2");
 		Base3ID = BlackboardComp->GetKeyID("Base3");
 		Base4ID = BlackboardComp->GetKeyID("Base4");
+		LastKnownBaseID = BlackboardComp->GetKeyID("LastKnownBase");
+		bFollowingPlayer = BlackboardComp->GetKeyID("FollowingPlayer");
 
 		BaseHeading = 0;
 
@@ -45,6 +47,7 @@ void AShipAI::Possess(APawn *InPawn)
 		BlackboardComp->SetValue<UBlackboardKeyType_Object>(Base3ID, *ActorItr);
 		++ActorItr;
 		BlackboardComp->SetValue<UBlackboardKeyType_Object>(Base4ID, *ActorItr);
+		BlackboardComp->SetValue<UBlackboardKeyType_Bool>(bFollowingPlayer, false);
 
 		BehaviorComp->StartTree(*Ship->ShipBehavior);
 		RunBehaviorTree(Ship->ShipBehavior);

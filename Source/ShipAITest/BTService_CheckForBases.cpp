@@ -29,13 +29,13 @@ void UBTService_CheckForBases::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		if (Player)
 		{
 			OwnerComp.GetBlackboardComponent()->SetValue<UBlackboardKeyType_Object>(ShipPC->PlayerID, Player);
-			GEngine->AddOnScreenDebugMessage(0, 2.f, FColor::Green, "Found ground unit");
+			GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Green, "Found ground unit");
 			
 		}
 		else if (FlyingPlayer)
 		{
 			OwnerComp.GetBlackboardComponent()->SetValue<UBlackboardKeyType_Object>(ShipPC->FlyingPlayerID, FlyingPlayer);
-			GEngine->AddOnScreenDebugMessage(0, 2.f, FColor::Green, "Found UFO");
+			GEngine->AddOnScreenDebugMessage(1, 2.f, FColor::Green, "Found UFO");
 		}
 	}
 }
