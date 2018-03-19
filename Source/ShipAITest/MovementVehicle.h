@@ -75,6 +75,7 @@ public:
 	/** Turn Debug Line Drawing from Actor to Steering Force **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
 	bool bDrawDebugLines;
+
 	/** Getting reference to gamemode holding obstacle TArray **/
 	UFUNCTION(BlueprintCallable, Category = "ObstaclesRef")
 	void  PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor Color )const;
@@ -144,10 +145,12 @@ protected:
 	float WeightWander;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
 	float WeightObstacleAvoidance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
+	float WeightWallAvoidance;
 
 	/** Set bits to turn on and off behaviors **/
 	UPROPERTY(EditAnywhere, Category = "Steering Behaviors", meta = (Bitmask, BitmaskEnum = "BehaviorTypes"))
-		uint32 BehaviorFlags;
+	uint32 BehaviorFlags;
 
 private:
 

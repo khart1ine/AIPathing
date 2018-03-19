@@ -20,6 +20,8 @@ USteeringBehaviors::USteeringBehaviors()
 	WeightPursuit = 1.0f;
 	WeightEvade = 1.0f;
 	WanderJitter = 1.0f;
+	WeightObstacleAvoidance = 1.0f;
+	WeightWallAvoidance = 1.0f;
 	LookAheadPursuit = 1.0f;
 	WanderTarget = FVector2DPlus(0.0f, 0.0f);
 	WanderRadius = 50.f;
@@ -34,6 +36,11 @@ USteeringBehaviors::USteeringBehaviors()
 //Returns pure average of all behaviors
 FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 {
+	if (IsWallAvoidanceOn())
+	{
+	//	SteeringForce += WallAvoidance(m_pVehicle->World()->Walls()) *
+		//	WeightWallAvoidance;
+	}
 
 	if (IsObstacleAvoidanceOn())
 	{
@@ -443,8 +450,8 @@ FVector2DPlus USteeringBehaviors::ObstacleAvoidance(const TArray<class AMovement
 	 if (GEngine)
 	 {
 		 GEngine->AddOnScreenDebugMessage(1, .1f, FColor::Yellow, FString::Printf(TEXT
-		 ("SteeringForce is: %f, %f - Location is %f, %f"),
-			 temp.X, temp.Y, VehiclePtr->GetActorLocation2D().X, VehiclePtr->GetActorLocation2D().Y));
+		 ("Yranslation is %f, %f"),
+			 VehiclePtr->GetActorTransform().GetTranslation().X, VehiclePtr->GetActorTransform().GetTranslation().Y));
 	 }
 
 	 return temp;

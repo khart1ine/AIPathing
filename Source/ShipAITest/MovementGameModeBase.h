@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "Vector2DPlus.h"
 #include "MovementVehicle.h"
+#include "MovementWalls.h"
 #include "MovementGameModeBase.generated.h"
 
 /**
@@ -55,6 +56,14 @@ public:
 	
 	// Sets default values for this actor's properties
 	AMovementGameModeBase();
+	
+	/** Contains all references to Obstacles in level **/
+	UPROPERTY()
+	TArray<class AMovementObstacle *> ObstaclesPtr;
+
+	/** Containts references and for FWallType struct for Walls in level**/
+	UPROPERTY()
+	TArray<class AMovementWalls *> WallsPtr;
 
 	/** Returns extent of current camera view **/
 	UFUNCTION(BlueprintCallable, Category = "FrustumExtents")
@@ -64,9 +73,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "FrustumExtents")
 	void WrapAround(FVector2DPlus &Pos, float Margin = 0);
 
-	UPROPERTY()
-	TArray<class AMovementObstacle *> ObstaclesPtr;
-
+	/** Tags whether an object is close enough tocollide with Obstacle**/
 	UFUNCTION()
 	void TagNeighbors(AMovementVehicle* VehiclePtr, const float radius);
 

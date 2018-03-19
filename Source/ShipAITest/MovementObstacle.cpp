@@ -39,7 +39,7 @@ void AMovementObstacle::BeginPlay()
 
 	if (GameMode)
 	{
-		int32 test = GameMode->ObstaclesPtr.AddUnique(this);
+		GameMode->ObstaclesPtr.AddUnique(this);
 	}
 }
 
@@ -48,11 +48,6 @@ void AMovementObstacle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-		//if (GEngine)
-		//{
-		//	GEngine->AddOnScreenDebugMessage(1044, 15.0f, FColor::Green, 
-		//		FString::Printf(TEXT("Radius is: %f - DesiredVelocity.y is: %f"),  Radius));
-		//}
 		if (bDrawDebugLines)
 		{
 			DrawDebugCircle(

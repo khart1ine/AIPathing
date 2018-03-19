@@ -30,7 +30,8 @@ enum class BehaviorTypes : uint8
 	Pursuit				UMETA(DisplayName = "Pursuit"),
 	Evade				UMETA(DisplayName = "Evade"),
 	Wander				UMETA(DisplayName = "Wander"),
-	ObstacleAvoidance	UMETA(DisplayName = "Obastacle Avoidance")
+	ObstacleAvoidance	UMETA(DisplayName = "Obastacle Avoidance"),
+	WallAvoidance		UMETA(DisplayName = "Wall Avoidance")
 };
 
 UCLASS(Blueprintable)
@@ -86,6 +87,7 @@ public:
 	void EvadeOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Evade); }
 	void WanderOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Wander); }
 	void ObstacleAvoidanceOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance); }
+	void WallAvoidanceOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::WallAvoidance); }
 
 	/** set binary flags off  **/
 	void SeekOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Seek)); }
@@ -95,6 +97,7 @@ public:
 	void EvadeOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Evade)); }
 	void WanderOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Wander)); }
 	void ObstacleAvoidanceOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance)); }
+	void WallAvoidanceOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::WallAvoidance)); }
 
 	/** Check if binary flag is on **/
 	bool IsSeekOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Seek)); }
@@ -104,7 +107,8 @@ public:
 	bool IsEvadeOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Evade)); }
 	bool IsWanderOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Wander)); }
 	bool IsObstacleAvoidanceOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance)); }
-	
+	bool IsWallAvoidanceOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::WallAvoidance)); }
+
 private:
 
 	/** bitmask for holding which behaviors should be active**/
@@ -146,6 +150,7 @@ private:
 	float WeightEvade;
 	float WeightWander;
 	float WeightObstacleAvoidance;
+	float WeightWallAvoidance;
 	float WanderJitter;
 	float DecelerationTweaker; //range between .3 and 1 to slow deceleration for Arrive SB
 	float LookAheadPursuit; // how far in front of the player's vector should the vehicle target 

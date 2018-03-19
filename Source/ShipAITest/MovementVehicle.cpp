@@ -51,6 +51,7 @@ AMovementVehicle::AMovementVehicle()
 	WeightEvade = 1.0f;
 	WeightWander = 1.0f;
 	WeightObstacleAvoidance = 1.0f;
+	WeightWallAvoidance = 1.0F;
 }
 
 TArray<class AMovementObstacle*>& AMovementVehicle::GetGameModeObstacles() const
@@ -107,6 +108,7 @@ void AMovementVehicle::BeginPlay()
 		Steering->SetBehaviorWeights(BehaviorTypes::Evade, WeightEvade);
 		Steering->SetBehaviorWeights(BehaviorTypes::Wander, WeightWander);
 		Steering->SetBehaviorWeights(BehaviorTypes::ObstacleAvoidance, WeightObstacleAvoidance);
+		Steering->SetBehaviorWeights(BehaviorTypes::WallAvoidance, WeightWallAvoidance);
 	}
 
 	//Puts current location in editor into the Location for the 2D Struct

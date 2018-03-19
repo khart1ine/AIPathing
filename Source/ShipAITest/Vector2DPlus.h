@@ -88,6 +88,25 @@ public:
 		return *this;
 	}
 
+	const FVector2DPlus& operator+=(const FVector2DPlus &rhs)
+	{
+		X += rhs.X;
+		Y += rhs.Y;
+
+		return *this;
+	}
+
+	//------------------------------ Perp ------------------------------------
+	//
+	//  Returns a vector perpendicular to this vector
+	//------------------------------------------------------------------------
+	inline FVector2DPlus  Perp()const
+	{
+		return FVector2DPlus(-Y, X);
+	}
+
+
+
 	/*........................SphericalToVector.........................................
 
 	Returns a  vector when passed in an anglein degrees and a magnitude
@@ -139,6 +158,14 @@ inline FVector2DPlus operator*(const FVector2DPlus &Lhs, float Rhs)
 {
 	FVector2DPlus result(Lhs);
 	result *= Rhs;
+	return result;
+}
+
+inline FVector2DPlus operator*(const FVector2DPlus &Lhs, const FVector2DPlus &Rhs)
+{
+	FVector2DPlus result(Lhs);
+	result.X *= Rhs.X;
+	result.Y *= Rhs.Y;
 	return result;
 }
 
