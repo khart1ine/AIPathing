@@ -32,7 +32,10 @@ enum class BehaviorTypes : uint8
 	Evade				UMETA(DisplayName = "Evade"),
 	Wander				UMETA(DisplayName = "Wander"),
 	ObstacleAvoidance	UMETA(DisplayName = "Obastacle Avoidance"),
-	WallAvoidance		UMETA(DisplayName = "Wall Avoidance")
+	WallAvoidance		UMETA(DisplayName = "Wall Avoidance"),
+	Interpose			UMETA(DisplayName = "Interpose"),
+	Hide				UMETA(DisplayName = "Hide"),
+	Separation			UMETA(DisplayName = "Separation")
 };
 
 UCLASS(Blueprintable)
@@ -89,6 +92,9 @@ public:
 	void WanderOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Wander); }
 	void ObstacleAvoidanceOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance); }
 	void WallAvoidanceOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::WallAvoidance); }
+	void SeparationOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Separation); }
+	void InterposeOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Interpose); }
+	void HideOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Hide); }
 
 	/** set binary flags off  **/
 	void SeekOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Seek)); }
@@ -99,6 +105,9 @@ public:
 	void WanderOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Wander)); }
 	void ObstacleAvoidanceOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance)); }
 	void WallAvoidanceOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::WallAvoidance)); }
+	void SeparationOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Separation)); }
+	void InterposeOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Interpose)); }
+	void HideOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Hide)); }
 
 	/** Check if binary flag is on **/
 	bool IsSeekOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Seek)); }
@@ -109,6 +118,9 @@ public:
 	bool IsWanderOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Wander)); }
 	bool IsObstacleAvoidanceOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::ObstacleAvoidance)); }
 	bool IsWallAvoidanceOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::WallAvoidance)); }
+	bool IsSeparationOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Separation)); }
+	bool IsInterposeOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Interpose)); }
+	bool IsHideOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Hide)); }
 
 private:
 
@@ -152,6 +164,9 @@ private:
 	float WeightWander;
 	float WeightObstacleAvoidance;
 	float WeightWallAvoidance;
+	float WeightSeparation;
+	float WeightInterpose;
+	float WeightHide;
 	float WanderJitter;
 	float DecelerationTweaker; //range between .3 and 1 to slow deceleration for Arrive SB
 	float LookAheadPursuit; // how far in front of the player's vector should the vehicle target 
@@ -197,7 +212,12 @@ private:
 	FVector2DPlus ObstacleAvoidance(const TArray<class AMovementObstacle *>& Obstacles);
 
 	/** this retunrs a steering force which will keep the agent away from walls**/
-	FVector2DPlus WallAvoidance(const TArray<FWallType> &walls);
+	FVector2DPlus WallAvoidance(const TArray<FWallType> &Walls);
+
+	/**	this results in a steering force that attempts to steer the vehicle
+		to the center of the vector connecting two moving agents.**/
+		FVector2DPlus Interpose(const AMovementVehicle* VehicleA, const AMovementVehicle* VehicleB);
+
 };
 
  /** Returns the smaller of 2 floats, couldn't find this in Unreal's math libraries **/

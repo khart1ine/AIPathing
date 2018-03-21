@@ -27,6 +27,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "2DLocation")
 	FORCEINLINE FVector2DPlus GetActorLocation2D() const{ return Transform2D;}
 
+	/** Returns the X & Y 2D Actor Forward Vector of AActor **/
+	UFUNCTION(BlueprintPure, Category = "2DLocation")
+	FORCEINLINE FVector2DPlus GetActorForwardVector2D() const { return FVector2DPlus(this->GetActorForwardVector().X, this->GetActorForwardVector().Z); }
 
 	/** Sets the X and Y FVector 2D Value as well as the actual 3D location of AActor **/
 	UFUNCTION(BlueprintCallable, Category = "2DLocation")

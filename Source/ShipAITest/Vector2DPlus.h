@@ -22,8 +22,11 @@ struct FVector2DPlus : public FVector2D
 	GENERATED_BODY()
 
 public:
-	FVector2DPlus(){X = 0.0f; Y = 0.0f;}
-	FVector2DPlus(float A, float B){X=A; Y=B;}
+	FVector2DPlus() : FVector2D() {}
+	FVector2DPlus(float InX, float InY) : FVector2D(InX, InY) {}
+
+	/** Use copy constructor of Parent **/
+	FVector2DPlus(const FVector2D& other) : FVector2D(other){}
 
 	/*........................Truncate.........................................
 
@@ -92,19 +95,16 @@ public:
 	/** Operators overloaded **/
 	const FVector2DPlus& operator *=(const float& Rhs)
 	{
-		X *= Rhs;
-		Y *= Rhs;
-
+		FVector2D::operator *=(Rhs);
 		return *this;
 	}
 
-	const FVector2DPlus& operator+=(const FVector2DPlus &rhs)
+	const FVector2DPlus& operator+=(const FVector2DPlus &Rhs)
 	{
-		X += rhs.X;
-		Y += rhs.Y;
-
+		FVector2D::operator +=(Rhs);
 		return *this;
 	}
+
 
 	//------------------------------ Perp ------------------------------------
 	//
@@ -141,52 +141,59 @@ public:
 
 };
 
-
-/** Operators overloaded as free functions so that these can be used with a non calling Vector2DPlus**/
-
-inline FVector2DPlus operator-(const FVector2DPlus &Lhs, const FVector2DPlus &Rhs)
+inline float Vec2DDistance(const FVector2DPlus &v1, const FVector2DPlus &v2);
+//-------------------- LinesIntersection2D-------------------------
+//
+//	Given 2 lines in 2D space AB, CD this returns true if an 
+//	intersection occurs and sets dist to the distance the intersection
+//  occurs along AB. Also sets the 2d vector point to the point of
+//  intersection
+//----------------------------------------------------------------- 
+inline bool LineIntersection2D(FVector2DPlus   A,
+	FVector2DPlus  B,
+	FVector2DPlus   C,
+	FVector2DPlus   D,
+	float&     dist,
+	FVector2DPlus&  point)
 {
-	FVector2DPlus result(Lhs);
 
-	result.X -= Rhs.X;
-	result.Y -= Rhs.Y;
+	float rTop = (A.Y - C.Y)*(D.X - C.X) - (A.X - C.X)*(D.Y - C.Y);
+	float rBot = (B.X - A.X)*(D.Y - C.Y) - (B.Y - A.Y)*(D.X - C.X);
 
-	return result;
+	float sTop = (A.Y - C.Y)*(B.X - A.X) - (A.X - C.X)*(B.Y - A.Y);
+	float sBot = (B.X - A.X)*(D.Y - C.Y) - (B.Y - A.Y)*(D.X - C.X);
+
+	if ((rBot == 0) || (sBot == 0))
+	{
+		//lines are parallel
+		return false;
+	}
+
+	float r = rTop / rBot;
+	float s = sTop / sBot;
+
+	if ((r > 0) && (r < 1) && (s > 0) && (s < 1))
+	{
+		dist = Vec2DDistance(A, B) * r;
+
+		point = A + (r * (B - A));
+
+		return true;
+	}
+
+	else
+	{
+		dist = 0;
+
+		return false;
+	}
 }
 
-inline FVector2DPlus operator+(const FVector2DPlus &Lhs, const FVector2DPlus &Rhs)
+inline float Vec2DDistance(const FVector2DPlus &v1, const FVector2DPlus &v2)
 {
-	FVector2DPlus result(Lhs);
 
-	result.X += Rhs.X;
-	result.Y += Rhs.Y;
+	float ySeparation = v2.Y - v1.Y;
+	float xSeparation = v2.X - v1.X;
 
-	return result;
+	return sqrt(ySeparation*ySeparation + xSeparation * xSeparation);
 }
-
-inline FVector2DPlus operator*(const FVector2DPlus &Lhs, float Rhs)
-{
-	FVector2DPlus result(Lhs);
-	result *= Rhs;
-	return result;
-}
-
-inline FVector2DPlus operator*(const FVector2DPlus &Lhs, const FVector2DPlus &Rhs)
-{
-	FVector2DPlus result(Lhs);
-	result.X *= Rhs.X;
-	result.Y *= Rhs.Y;
-	return result;
-}
-
-inline FVector2DPlus operator/(const FVector2DPlus &Lhs, float val)
-{
-	FVector2DPlus result(Lhs);
-	result.X /= val;
-	result.Y /= val;
-
-	return result;
-}
-
-
-

@@ -67,6 +67,14 @@ public:
 	/** Getting reference to gamemode for SteeringBehaviros**/
 	UFUNCTION(BlueprintPure, Category = "Target")
 	class AMovementGameModeBase* GetGameMode()const {return GameMode;}
+	
+	/** Getting reference to gamemode for SteeringBehaviros**/
+	UFUNCTION(BlueprintPure, Category = "Interpose")
+		class AMovementVehicle* GetInterpose1()const { return Interpose1; }
+	
+	/** Getting reference to gamemode for SteeringBehaviros**/
+	UFUNCTION(BlueprintPure, Category = "Interpose")
+		class AMovementVehicle* GetInterpose2()const { return Interpose2; }
 
 	/** Getting reference to gamemode holding obstacle TArray **/
 	UFUNCTION(BlueprintCallable, Category = "ObstaclesRef")
@@ -82,7 +90,7 @@ public:
 
 	/** Getting reference to gamemode holding obstacle TArray **/
 	UFUNCTION(BlueprintCallable, Category = "ObstaclesRef")
-	void  PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor Color )const;
+	void  PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor Color, bool Local )const;
 	
 protected:
 
@@ -96,6 +104,12 @@ protected:
 	/** Dynamic Target set in world that is the player **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target", meta = (BlueprintProtect = "true"))
 	AMovementPlayer* DynamicTarget;
+
+	/** Two targets to test interpose r **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interpose", meta = (BlueprintProtect = "true"))
+	AMovementVehicle* Interpose1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interpose", meta = (BlueprintProtect = "true"))
+	AMovementVehicle* Interpose2;
 
 
 	/** Vehicle Maximum Speed controls the magnitude of the Velocity**/
@@ -151,6 +165,12 @@ protected:
 	float WeightObstacleAvoidance;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
 	float WeightWallAvoidance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
+	float WeightSeparation;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
+	float WeightInterpose;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
+	float WeightHide;
 
 	/** Set bits to turn on and off behaviors **/
 	UPROPERTY(EditAnywhere, Category = "Steering Behaviors", meta = (Bitmask, BitmaskEnum = "BehaviorTypes"))

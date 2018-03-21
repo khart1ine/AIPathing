@@ -61,6 +61,9 @@ public:
 	UPROPERTY()
 	TArray<class AMovementObstacle *> ObstaclesPtr;
 
+	UPROPERTY()
+	TArray<class AMovementVehicle *> VehiclesInLevelPtr;
+
 	/** Containts references and for FWallType struct for Walls in level**/
 	UPROPERTY()
 	TArray<FWallType> WallsPtr;

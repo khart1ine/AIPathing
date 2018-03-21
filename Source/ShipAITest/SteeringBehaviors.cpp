@@ -23,6 +23,9 @@ USteeringBehaviors::USteeringBehaviors()
 	WanderJitter = 1.0f;
 	WeightObstacleAvoidance = 1.0f;
 	WeightWallAvoidance = 1.0f;
+	WeightSeparation = 1.0f;
+	WeightInterpose = 1.0f;
+	WeightHide = 1.0f;
 	LookAheadPursuit = 1.0f;
 	WanderTarget = FVector2DPlus(0.0f, 0.0f);
 	WanderRadius = 50.f;
@@ -33,7 +36,9 @@ USteeringBehaviors::USteeringBehaviors()
 	//Delete after debugging
 	SBDebugTarget = FVector2DPlus (0.0f,0.0f);
 
-	WallDetectionFeelerLength = 50.0f;
+	WallDetectionFeelerLength = 300.0f;
+
+	Feelers.Init(FVector2DPlus(0.0f, 0.0f), 3);
 }	
 
 //Returns pure average of all behaviors
@@ -43,6 +48,9 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 	{
 		SteeringForce += WallAvoidance(VehiclePtr->GetGameModeWalls()) *
 			WeightWallAvoidance;
+
+		if (VehiclePtr->bDrawDebugLines) VehiclePtr->PrintDebugLineFromPlayerOrigin(
+			SteeringForce, FColor(255, 0, 0), true);
 	}
 
 	if (IsObstacleAvoidanceOn())
@@ -50,16 +58,20 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 		SteeringForce += ObstacleAvoidance(VehiclePtr->GetGameModeObstacles()) * WeightObstacleAvoidance;
 		
 		if (VehiclePtr->bDrawDebugLines) VehiclePtr->PrintDebugLineFromPlayerOrigin(
-			SteeringForce, FColor(0, 0, 150));
+			ObstacleAvoidance(VehiclePtr->GetGameModeObstacles()) * WeightObstacleAvoidance, FColor(0, 0, 150), true);
 	}
 
+	/*if (On(separation))
+	{
+		SteeringForce += SeparationPlus(m_pVehicle->World()->Agents()) * m_dWeightSeparation;
+	}*/
 
 	if (IsSeekOn())
 	{
 		FVector2DPlus TargetSeek = Seek(VehiclePtr->GetTarget());
 		
 		if (VehiclePtr->bDrawDebugLines) VehiclePtr->PrintDebugLineFromPlayerOrigin( 
-			TargetSeek * WeightSeek, FColor(0, 150, 0));
+			TargetSeek * WeightSeek, FColor(0, 150, 0), true);
 
 		SteeringForce += (TargetSeek * WeightSeek);
 	}
@@ -69,7 +81,7 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 		FVector2DPlus TargetFlee = Flee(VehiclePtr->GetTarget());
 
 		if (VehiclePtr->bDrawDebugLines) VehiclePtr->PrintDebugLineFromPlayerOrigin(
-			TargetFlee * WeightFlee, FColor(150, 0, 0));
+			TargetFlee * WeightFlee, FColor(150, 0, 0), true);
 
 		SteeringForce += (TargetFlee * WeightFlee);
 	}
@@ -79,7 +91,7 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 		FVector2DPlus TargetArrive = Arrive(VehiclePtr->GetTarget());
 
 		if (VehiclePtr->bDrawDebugLines) VehiclePtr->PrintDebugLineFromPlayerOrigin(
-			TargetArrive * WeightArrive, FColor(0, 50, 0));
+			TargetArrive * WeightArrive, FColor(0, 50, 0), true);
 
 		SteeringForce += (TargetArrive * WeightArrive);
 
@@ -90,7 +102,7 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 		FVector2DPlus TargetArrive = Pursuit(VehiclePtr->ReturnDynamicTargetPtr());
 
 		if (VehiclePtr->bDrawDebugLines) VehiclePtr->PrintDebugLineFromPlayerOrigin(
-			TargetArrive * WeightPursuit, FColor(0, 50, 50));
+			TargetArrive * WeightPursuit, FColor(0, 50, 50), true);
 
 		SteeringForce += (TargetArrive * WeightPursuit);
 	}
@@ -100,7 +112,7 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 		FVector2DPlus TargetArrive = Evade(VehiclePtr->ReturnDynamicTargetPtr());
 
 		if (VehiclePtr->bDrawDebugLines) VehiclePtr->PrintDebugLineFromPlayerOrigin(
-			TargetArrive * WeightEvade, FColor(50, 0, 0));
+			TargetArrive * WeightEvade, FColor(50, 0, 0), true);
 
 		SteeringForce += (TargetArrive * WeightEvade);
 	}
@@ -110,6 +122,13 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 		//Debug lines set in vehicle
 		FVector2DPlus TargetArrive = Wander();
 		SteeringForce += TargetArrive * WeightWander;
+	}
+
+	if (IsInterposeOn())
+	{
+		check(VehiclePtr->GetInterpose1() && VehiclePtr->GetInterpose2() && "Interpose agents not assigned");
+
+		SteeringForce += Interpose(VehiclePtr->GetInterpose1(), VehiclePtr->GetInterpose2()) * WeightInterpose;
 	}
 
 	SteeringForce.Truncate(VehiclePtr->GetMaxForce());
@@ -168,6 +187,14 @@ void USteeringBehaviors::SetBehaviorWeights(BehaviorTypes BT, float Amount)
 
 	case BehaviorTypes::ObstacleAvoidance:
 		WeightObstacleAvoidance = Amount;
+		break;
+
+	case BehaviorTypes::WallAvoidance:
+		WeightWallAvoidance = Amount;
+		break;
+
+	case BehaviorTypes::Separation:
+		WeightSeparation = Amount;
 		break;
 
 	}
@@ -447,17 +474,9 @@ FVector2DPlus USteeringBehaviors::ObstacleAvoidance(const TArray<class AMovement
 	}
 	else
 	{
-	 FVector2DPlus temp = FVector2DPlus(VehiclePtr->GetActorForwardVector().X * SteeringForce.X + VehiclePtr->GetActorLocation2D().X, 
+	return FVector2DPlus(VehiclePtr->GetActorForwardVector().X * SteeringForce.X + VehiclePtr->GetActorLocation2D().X, 
 		VehiclePtr->GetActorForwardVector().Z * SteeringForce.Y + VehiclePtr->GetActorLocation2D().Y);
 
-	 if (GEngine)
-	 {
-		 GEngine->AddOnScreenDebugMessage(1, .1f, FColor::Yellow, FString::Printf(TEXT
-		 ("Yranslation is %f, %f"),
-			 VehiclePtr->GetActorTransform().GetTranslation().X, VehiclePtr->GetActorTransform().GetTranslation().Y));
-	 }
-
-	 return temp;
 	}
 	
 }
@@ -467,27 +486,84 @@ FVector2DPlus USteeringBehaviors::ObstacleAvoidance(const TArray<class AMovement
 //  Returns a steering force that keeps the agent away from the suface of the wall
 // that it encounters
 //------------------------------------------------------------------------
-FVector2DPlus USteeringBehaviors::WallAvoidance(const TArray<FWallType> &walls)
+FVector2DPlus USteeringBehaviors::WallAvoidance(const TArray<FWallType> &Walls)
 {
+	//Create the feelers to check for walls
 	CreateFeelers();
-	if (GEngine)
+
+	//Draw Debug for feelers
+	if (VehiclePtr->bDrawDebugLines)
 	{
-	GEngine->AddOnScreenDebugMessage(10, 15.0f, FColor::Green, 
-		FString::Printf(TEXT("WallAvoidance")));
+		VehiclePtr->PrintDebugLineFromPlayerOrigin(
+			Feelers[0], FColor(0, 50, 0), false);
+
+		VehiclePtr->PrintDebugLineFromPlayerOrigin(
+			Feelers[1], FColor(0, 50, 0), false);
+
+		VehiclePtr->PrintDebugLineFromPlayerOrigin(
+			Feelers[2], FColor(0, 50, 0), false);
 	}
 
+	//Holds distance to current wall collision and another to keep the one closest to agent
+	float DistToThisIP = 0.0f;
+	float DistToClosestIP = TNumericLimits<float>::Max();
 
-	if (VehiclePtr->bDrawDebugLines) 
+	//this will hold an index into the vector of walls
+	int32 ClosestWall = -1;
+
+	FVector2DPlus SteeringForce(0.0f, 0.0f); //used to store return
+	FVector2DPlus Point;       //used for storing temporary info
+	FVector2DPlus ClosestPoint;  //holds the closest intersection point
+
+								 //examine each feeler in turn
+	for (int32 FeelIndex = 0; FeelIndex != Feelers.Num(); ++FeelIndex)
 	{
-		for (auto& Feeler : Feelers)
+		//run through each wall checking for any intersection points
+		for (int32 WallIndex = 0; WallIndex != Walls.Num(); ++WallIndex)
 		{
-			VehiclePtr->PrintDebugLineFromPlayerOrigin(
-			Feeler, FColor(0, 50, 0));
-		}
-	}
+			if (LineIntersection2D(VehiclePtr->GetActorLocation2D(),
+				Feelers[FeelIndex],
+				Walls[WallIndex].LineBegin,
+				Walls[WallIndex].LineEnd,
+				DistToThisIP,
+				Point))
+			{
+		//is this the closest found so far? If so keep a record
+				if (DistToThisIP < DistToClosestIP)
+				{
+					DistToClosestIP = DistToThisIP;
 
-	return FVector2DPlus(0.0f, 0.0f);
+					ClosestWall = WallIndex;
+
+					ClosestPoint = Point;
+				}
+
+			}
+		}//next wall
+		
+		if (ClosestWall >= 0)
+		{
+			//calculate by what distance the projected position of the agent
+			//will overshoot the wall
+			FVector2DPlus OverShoot = Feelers[FeelIndex] - ClosestPoint;
+
+			//create a force in the direction of the wall normal, with a 
+			//magnitude of the overshoot
+			SteeringForce = Walls[ClosestWall].LineNormal * OverShoot.Size();
+			
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(103, .1f, FColor::Green, FString::Printf(TEXT("LineIntersects wall is: %d"), ClosestWall));
+			}
+
+
+		}
+
+	}//next feeler
+	return SteeringForce;
+
 }
+
 	
 //--------------------------- CreateFeelers -------------------------------------
 //
@@ -495,18 +571,44 @@ FVector2DPlus USteeringBehaviors::WallAvoidance(const TArray<FWallType> &walls)
 //------------------------------------------------------------------------
 void USteeringBehaviors::CreateFeelers()
 {
-	FVector2DPlus Temp = FVector2DPlus(VehiclePtr->GetActorForwardVector().X, VehiclePtr->GetActorForwardVector().Z);
-
+	FVector2DPlus ForwardVector = FVector2DPlus(VehiclePtr->GetActorForwardVector().X * WallDetectionFeelerLength,
+		VehiclePtr->GetActorForwardVector().Z * WallDetectionFeelerLength);
 	//Feeler straight in front
-	//FVector2DPlus Feeler = Temp = VehiclePtr->GetHeading();
-	Feelers.Add(Temp * WallDetectionFeelerLength + VehiclePtr->GetActorLocation2D());
+	Feelers[0] = ForwardVector + VehiclePtr->GetActorLocation2D();
 
 	//Feeler to left
-//	Temp -= 90.f;
-	//Feelers.AddUnique(FVector2DPlus (VehiclePtr->GetActorLocation2D() + WallDetectionFeelerLength / 2.0f * Temp));
+	FVector2DPlus Temp;
+	Temp = ForwardVector.GetRotated(30);
+	Feelers[1] = Temp + VehiclePtr->GetActorLocation2D();
 
-	//Feller to right
-//	Temp += 180.0f;
-	//Feelers.AddUnique(FVector2DPlus (VehiclePtr->GetActorLocation2D() + WallDetectionFeelerLength/2.0f * Temp));
+	//Feeler to the right of plane
+	Temp = ForwardVector.GetRotated(-30);
+	Feelers[2] = Temp + VehiclePtr->GetActorLocation2D();
 
 }
+
+FVector2DPlus USteeringBehaviors::Interpose(const AMovementVehicle * VehicleA, const AMovementVehicle * VehicleB)
+{
+	//first we need to figure out where the two agents are going to be at 
+	//time T in the future. This is approximated by determining the time
+	//taken to reach the mid way point at the current time at at max speed.
+	FVector2DPlus MidPoint = (VehicleA->GetActorLocation2D() + VehicleB->GetActorLocation2D()) / 2.0;
+
+	float TimeToReachMidPoint = Vec2DDistance(VehiclePtr->GetActorLocation2D(), MidPoint) /
+		VehiclePtr->GetMaxSpeed();
+
+	//now we have T, we assume that agent A and agent B will continue on a
+	//straight trajectory and extrapolate to get their future positions
+	FVector2DPlus APos = VehicleA->GetActorLocation2D() + VehicleA->Get2DVelocity() * TimeToReachMidPoint;
+	FVector2DPlus BPos = VehicleB->GetActorLocation2D() + VehicleB->Get2DVelocity() * TimeToReachMidPoint;
+
+	//calculate the mid point of these predicted positions
+	MidPoint = (APos + BPos) / 2.0;
+
+	//how much ahead of the agents position
+	FVector2DPlus MidPointForward = MidPoint + (VehiclePtr->GetActorLocation2D() + VehiclePtr->GetActorForwardVector2D() * 100);
+
+	//then steer to Arrive at it
+	return Arrive(MidPoint);
+}
+

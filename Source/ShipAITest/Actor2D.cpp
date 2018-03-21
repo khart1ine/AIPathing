@@ -7,7 +7,7 @@
 AActor2D::AActor2D()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	Transform2D = FVector2DPlus(GetActorLocation().X, GetActorLocation().Z);
 	bTag = false;
 
@@ -36,6 +36,7 @@ void AActor2D::BeginPlay()
 void AActor2D::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	Transform2D = FVector2DPlus(GetActorLocation().X, GetActorLocation().Z);
 
 }
 

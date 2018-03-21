@@ -23,6 +23,8 @@ public:
 		WallsRef = WR;
 	}
 
+
+
 	/** Begining of line segment **/
 	UPROPERTY()
 	FVector2DPlus LineBegin;

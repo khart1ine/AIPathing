@@ -71,6 +71,9 @@ void AMovementWalls::BeginPlay()
 	{
 		//FWallType Line1 = FWallType(
 		GameMode->WallsPtr.Add(FWallType(TopLeft, TopRight, WallNormalTop, this));
+		GameMode->WallsPtr.Add(FWallType(BottomLeft, BottomRight, WallNormalBottom, this));
+		GameMode->WallsPtr.Add(FWallType(TopRight, BottomRight, WallNormalRight, this));
+		GameMode->WallsPtr.Add(FWallType(TopLeft, BottomLeft, WallNormalLeft, this));
 	}
 
 }

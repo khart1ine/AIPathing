@@ -65,21 +65,32 @@ TArray<struct FWallType>& AMovementVehicle::GetGameModeWalls() const
 }
 
 
-void AMovementVehicle::PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor Color) const
+void AMovementVehicle::PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor Color, bool Local) const
 {
 		//FVector Start = (GetActorForwardVector() * Radius) + GetActorLocation();
 	FVector Start = GetActorLocation();
-	End *= DeltaTimeForActor * 10.0f ;
+	FVector Finish;
+	
+	(Local) ? Finish=FVector(Start.X + End.X, 0.0F, Start.Z + End.Y) : Finish=FVector(End.X, 0.0f, End.Y);
+
+		End *= DeltaTimeForActor * 10.0f ;
 		DrawDebugLine(
 						GetWorld(),
-						FVector(Start.X, 0.0f, Start.Z),
-						FVector(Start.X + End.X, 0.0F, Start.Z + End.Y),
+						Start,
+						Finish,
 						Color,  
 						false,  //not persistent ( goes away)
 						-1,
 						0,
 						2	//thickness
 		);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(13, 150.0f, FColor::Yellow,
+				FString::Printf(TEXT("Start: %f, %f - Finish: %f, %f"),
+					Start.X, Start.Z, Finish.X, Finish.Z), false);
+
+		}
 }
 
 void AMovementVehicle::BeginPlay()
@@ -115,6 +126,9 @@ void AMovementVehicle::BeginPlay()
 		Steering->SetBehaviorWeights(BehaviorTypes::Wander, WeightWander);
 		Steering->SetBehaviorWeights(BehaviorTypes::ObstacleAvoidance, WeightObstacleAvoidance);
 		Steering->SetBehaviorWeights(BehaviorTypes::WallAvoidance, WeightWallAvoidance);
+		Steering->SetBehaviorWeights(BehaviorTypes::Separation, WeightSeparation);
+		Steering->SetBehaviorWeights(BehaviorTypes::Separation, WeightInterpose);
+		Steering->SetBehaviorWeights(BehaviorTypes::Hide, WeightHide);
 	}
 
 	//Puts current location in editor into the Location for the 2D Struct
@@ -131,6 +145,7 @@ void AMovementVehicle::BeginPlay()
 	if (GMB)
 	{
 		GameMode = (AMovementGameModeBase *)GMB;
+		GameMode->VehiclesInLevelPtr.AddUnique(this);
 	}
 
 	//Set default heading to pointing due east
