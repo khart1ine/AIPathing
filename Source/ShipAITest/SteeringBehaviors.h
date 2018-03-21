@@ -218,6 +218,12 @@ private:
 		to the center of the vector connecting two moving agents.**/
 		FVector2DPlus Interpose(const AMovementVehicle* VehicleA, const AMovementVehicle* VehicleB);
 
+
+	/** Given the position of a hunter, and the position and radius of
+	    an obstacle, this method calculates a position DistanceFromBoundary 
+		away from its bounding radius and directly opposite the hunter**/
+		FVector2DPlus GetHidingPosition(const FVector2DPlus& posOb, const FVector2DPlus& posHunter);
+
 };
 
  /** Returns the smaller of 2 floats, couldn't find this in Unreal's math libraries **/

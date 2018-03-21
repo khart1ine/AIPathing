@@ -612,3 +612,23 @@ FVector2DPlus USteeringBehaviors::Interpose(const AMovementVehicle * VehicleA, c
 	return Arrive(MidPoint);
 }
 
+//------------------------- GetHidingPosition ----------------------------
+//
+//  Given the position of a hunter, and the position and radius of
+//  an obstacle, this method calculates a position DistanceFromBoundary 
+//  away from its bounding radius and directly opposite the hunter
+//------------------------------------------------------------------------
+//FVector2DPlus USteeringBehaviors::GetHidingPosition(const FVector2DPlus& posOb, const FVector2DPlus& posHunter)
+//{
+//	//calculate how far away the agent is to be from the chosen obstacle's
+//	//bounding radius
+//	const double DistanceFromBoundary = 30.0;
+//	double       DistAway = radiusOb + DistanceFromBoundary;
+//
+//	//calculate the heading toward the object from the hunter
+//	Vector2D ToOb = Vec2DNormalize(posOb - posHunter);
+//
+//	//scale it to size and add to the obstacles position to get
+//	//the hiding spot.
+//	return (ToOb * DistAway) + posOb;
+//}
