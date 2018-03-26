@@ -35,6 +35,7 @@ enum class BehaviorTypes : uint8
 	WallAvoidance		UMETA(DisplayName = "Wall Avoidance"),
 	Interpose			UMETA(DisplayName = "Interpose"),
 	Hide				UMETA(DisplayName = "Hide"),
+	FollowPath			UMETA(DisplayName = "Follow Path"),
 	Separation			UMETA(DisplayName = "Separation")
 };
 
@@ -77,6 +78,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Pursuit and Evade SB")
 	void SetDecelerationTweeker(float Decelerate) { DecelerationTweaker = Decelerate; }
 
+	/** Amount the pursuing or fleeing vehicle looks ahead of the player's movement vector**/
+	UFUNCTION(BlueprintCallable, Category = "Pursuit and Evade SB")
+	void SetWaypointPathDistance(float DistanceSq) { WaypointPathDistanceSq = DistanceSq; }
+
 	UFUNCTION(BlueprintCallable, Category = "Weights")
 	void SetBehaviorWeights(BehaviorTypes BT, float Amount);
 
@@ -95,6 +100,7 @@ public:
 	void SeparationOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Separation); }
 	void InterposeOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Interpose); }
 	void HideOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Hide); }
+	void FollowPathOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::FollowPath); }
 
 	/** set binary flags off  **/
 	void SeekOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Seek)); }
@@ -108,6 +114,7 @@ public:
 	void SeparationOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Separation)); }
 	void InterposeOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Interpose)); }
 	void HideOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Hide)); }
+	void FollowPathOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::FollowPath)); }
 
 	/** Check if binary flag is on **/
 	bool IsSeekOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Seek)); }
@@ -121,6 +128,7 @@ public:
 	bool IsSeparationOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Separation)); }
 	bool IsInterposeOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Interpose)); }
 	bool IsHideOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Hide)); }
+	bool IsFollowPathOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::FollowPath)); }
 
 private:
 
@@ -167,9 +175,11 @@ private:
 	float WeightSeparation;
 	float WeightInterpose;
 	float WeightHide;
+	float WeightFollowPath;
 	float WanderJitter;
 	float DecelerationTweaker; //range between .3 and 1 to slow deceleration for Arrive SB
 	float LookAheadPursuit; // how far in front of the player's vector should the vehicle target 
+	float WaypointPathDistanceSq; //How close the vehicle needs to be to the waypoint to trigger next waypoint
 
 	/** Length of Feelers for wall detector **/
 	float WallDetectionFeelerLength;
@@ -204,6 +214,7 @@ private:
 	/**  This does the opposite as pursuit except that it flees from its estimated future position**/
 	FVector2DPlus Evade(class AMovementPlayer* DynamicTarget);
 
+
 	/**  This behavior makes the agent wander about randomly **/
 	FVector2DPlus Wander();
 
@@ -218,11 +229,16 @@ private:
 		to the center of the vector connecting two moving agents.**/
 		FVector2DPlus Interpose(const AMovementVehicle* VehicleA, const AMovementVehicle* VehicleB);
 
+	/**  Agents looks for a safe hiding place from the player **/
+		FVector2DPlus Hide( AMovementPlayer* Hunter, const TArray<class AMovementObstacle*>& Obstacles);
 
 	/** Given the position of a hunter, and the position and radius of
 	    an obstacle, this method calculates a position DistanceFromBoundary 
 		away from its bounding radius and directly opposite the hunter**/
-		FVector2DPlus GetHidingPosition(const FVector2DPlus& posOb, const FVector2DPlus& posHunter);
+		FVector2DPlus GetHidingPosition(const FVector2DPlus& PosOb, const float RadiusOb, const FVector2DPlus& PosHunter);
+
+		/** Puts the vehicle on a path of waypoints **/
+		FVector2DPlus FollowPath();
 
 };
 

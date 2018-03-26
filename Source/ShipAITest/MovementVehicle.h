@@ -44,6 +44,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Movement")
 	inline FVector2DPlus Get2DVelocity()const { return Velocity;}
 
+	/** Gets current 2D velocity vector **/
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void VelocityZero() {  Velocity.Zero(); }
+
 	/** Get's the static non moving target location in world space **/
 	UFUNCTION(BlueprintPure, Category = "Target")
 	FVector2DPlus GetTarget()const;
@@ -70,7 +74,7 @@ public:
 	
 	/** Getting reference to gamemode for SteeringBehaviros**/
 	UFUNCTION(BlueprintPure, Category = "Interpose")
-		class AMovementVehicle* GetInterpose1()const { return Interpose1; }
+	class AMovementVehicle* GetInterpose1()const { return Interpose1; }
 	
 	/** Getting reference to gamemode for SteeringBehaviros**/
 	UFUNCTION(BlueprintPure, Category = "Interpose")
@@ -83,6 +87,10 @@ public:
 	/** Getting reference to gamemode holding walls TArray **/
 	UFUNCTION(BlueprintCallable, Category = "WallsRef")
 	TArray<struct FWallType>&  GetGameModeWalls()const;
+
+	/** Getting reference to gamemode holding walls TArray **/
+	UFUNCTION(BlueprintCallable, Category = "WallsRef")
+	AMovementPath*  GetMovementPath()const{ return MovementPath; }
 
 	/** Turn Debug Line Drawing from Actor to Steering Force **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
@@ -144,9 +152,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrive SB", meta = (BlueprintProtect = "true"))
 	float DecelerationTweaker;
 
+	/** Edit distance to waypoint before moving to next waypoint **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Path Behavior", meta = (BlueprintProtect = "true"))
+	float WaypointPathDistanceSq;
+
+	/** Loops waypoints **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Path Behavior", meta = (BlueprintProtect = "true"))
+	bool bWaypointLoop;
+
 	/** Add Sprite to AActor**/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperSprite", meta = (BlueprintProtect = "true"))
 	UPaperSpriteComponent * PaperSpriteComponent;
+
+	/** Stores path for vehicle **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Path Behavior", meta = (BlueprintProtect = "true"))
+	class AMovementPath * MovementPath;
 
 	/** Set bits for weights **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
@@ -171,6 +191,8 @@ protected:
 	float WeightInterpose;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
 	float WeightHide;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
+		float WeightFollowPath;
 
 	/** Set bits to turn on and off behaviors **/
 	UPROPERTY(EditAnywhere, Category = "Steering Behaviors", meta = (Bitmask, BitmaskEnum = "BehaviorTypes"))

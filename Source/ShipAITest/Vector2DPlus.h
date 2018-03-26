@@ -197,3 +197,18 @@ inline float Vec2DDistance(const FVector2DPlus &v1, const FVector2DPlus &v2)
 
 	return sqrt(ySeparation*ySeparation + xSeparation * xSeparation);
 }
+
+inline FVector2DPlus Vec2DNormalize(const FVector2DPlus &v)
+{
+	FVector2DPlus vec = v;
+
+	float vector_length = vec.Size();
+
+	if (vector_length > 1)
+	{
+		vec.X /= vector_length;
+		vec.Y /= vector_length;
+	}
+
+	return vec;
+}

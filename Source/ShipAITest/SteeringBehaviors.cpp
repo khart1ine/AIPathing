@@ -10,6 +10,7 @@
 #include "Math/NumericLimits.h"
 #include "MovementObstacle.h"
 #include "DrawDebugHelpers.h"
+#include "MovementPath.h"
 #include "MovementWalls.h"
 
 //Set default variables
@@ -26,6 +27,7 @@ USteeringBehaviors::USteeringBehaviors()
 	WeightSeparation = 1.0f;
 	WeightInterpose = 1.0f;
 	WeightHide = 1.0f;
+	WeightFollowPath = 1.0f;
 	LookAheadPursuit = 1.0f;
 	WanderTarget = FVector2DPlus(0.0f, 0.0f);
 	WanderRadius = 50.f;
@@ -129,6 +131,18 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 		check(VehiclePtr->GetInterpose1() && VehiclePtr->GetInterpose2() && "Interpose agents not assigned");
 
 		SteeringForce += Interpose(VehiclePtr->GetInterpose1(), VehiclePtr->GetInterpose2()) * WeightInterpose;
+	}
+
+	if (IsHideOn())
+	{
+		check(VehiclePtr->ReturnDynamicTargetPtr() && "Hide target not assigned");
+
+		SteeringForce += Hide(VehiclePtr->ReturnDynamicTargetPtr(), VehiclePtr->GetGameModeObstacles()) * WeightHide;
+	}
+
+	if (IsFollowPathOn())
+	{
+		SteeringForce += FollowPath() * WeightFollowPath;
 	}
 
 	SteeringForce.Truncate(VehiclePtr->GetMaxForce());
@@ -335,6 +349,8 @@ FVector2DPlus USteeringBehaviors::Evade(AMovementPlayer * DynamicTarget)
 	return Flee(DynamicTarget->GetActorLocation2D() + DynamicTarget->Get2DVelocity() * LookAheadTime);
 }
 
+
+
 //--------------------------- Wander -------------------------------------
 //
 //  This behavior makes the agent wander about randomly
@@ -390,14 +406,17 @@ FVector2DPlus USteeringBehaviors::ObstacleAvoidance(const TArray<class AMovement
 	float DistToClosestIP = TNumericLimits<float>::Max();
 	
 	//this will record the transformed local coordinates of the CIB
-	FVector2DPlus LocalPosOfClosestObstacle;
+	FVector2DPlus LocalPosOfClosestObstacle = FVector2DPlus(0.0f, 0.0f);
+
 
 	for (auto& Ob : Obstacles)
 	{
 		if (Ob->IsTagged())
 		{
+
 			//calculate this obstacle's position in local space
-			FVector LocalPosition = VehiclePtr->GetTransform().InverseTransformPosition(Ob->GetActorLocation());
+			FVector LocalPosition = FVector(0.0f, 0.0f, 0.0f);
+			LocalPosition = VehiclePtr->GetTransform().InverseTransformPosition(Ob->GetActorLocation());
 
 			//if the local position has a negative x value then it must lay
 			//behind the agent. (in which case it can be ignored)
@@ -443,7 +462,7 @@ FVector2DPlus USteeringBehaviors::ObstacleAvoidance(const TArray<class AMovement
 	}
 	//if we have found an intersecting obstacle, calculate a steering 
 	//force away from it
-	FVector2DPlus SteeringForce;
+	FVector2DPlus SteeringForce = FVector2DPlus(0.0f, 0.0f);
 
 	if (ClosestIntersectingObstacle)
 	{
@@ -515,7 +534,7 @@ FVector2DPlus USteeringBehaviors::WallAvoidance(const TArray<FWallType> &Walls)
 	FVector2DPlus Point;       //used for storing temporary info
 	FVector2DPlus ClosestPoint;  //holds the closest intersection point
 
-								 //examine each feeler in turn
+	//examine each feeler in turn
 	for (int32 FeelIndex = 0; FeelIndex != Feelers.Num(); ++FeelIndex)
 	{
 		//run through each wall checking for any intersection points
@@ -612,23 +631,119 @@ FVector2DPlus USteeringBehaviors::Interpose(const AMovementVehicle * VehicleA, c
 	return Arrive(MidPoint);
 }
 
+//--------------------------- Hide ---------------------------------------
+//
+//------------------------------------------------------------------------
+FVector2DPlus USteeringBehaviors::Hide( AMovementPlayer* Hunter, const TArray<AMovementObstacle*>& Obstacles)
+{
+	float    DistToClosest = TNumericLimits<float>().Max();
+	FVector2DPlus BestHidingSpot;
+
+	//std::vector<BaseGameEntity*>::const_iterator curOb = obstacles.begin();
+	//std::vector<BaseGameEntity*>::const_iterator closest;
+	//const AMovementVehicle* Closest;
+
+	for (auto& Obstacle : Obstacles)
+	{
+		//calculate the position of the hiding spot for this obstacle
+		FVector2DPlus HidingSpot = GetHidingPosition(Obstacle->GetActorLocation2D(),
+			Obstacle->GetRadius(),
+			Hunter->GetActorLocation2D());
+
+		//work in distance-squared space to find the closest hiding
+		//spot to the agent
+		float Dist = FVector2DPlus::DistSquared(HidingSpot, VehiclePtr->GetActorLocation2D());
+
+		if (Dist < DistToClosest)
+		{
+			DistToClosest = Dist;
+
+			BestHidingSpot = HidingSpot;
+
+			//Closest = Obstacle;
+		}
+
+	}//next obstacle
+
+	 //if no suitable obstacles found then Evade the hunter
+	if (DistToClosest == TNumericLimits<float>().Max())
+	{
+		return Evade(Hunter);
+	}
+	
+	GEngine->AddOnScreenDebugMessage(1, .2f, FColor::Red, FString::Printf(TEXT("BestHidingSpot: x: %f, y: %f"), BestHidingSpot.X, BestHidingSpot.Y));
+
+	//else use Arrive on the hiding spot
+	return Arrive(BestHidingSpot);
+}
+
 //------------------------- GetHidingPosition ----------------------------
 //
 //  Given the position of a hunter, and the position and radius of
 //  an obstacle, this method calculates a position DistanceFromBoundary 
 //  away from its bounding radius and directly opposite the hunter
 //------------------------------------------------------------------------
-//FVector2DPlus USteeringBehaviors::GetHidingPosition(const FVector2DPlus& posOb, const FVector2DPlus& posHunter)
-//{
-//	//calculate how far away the agent is to be from the chosen obstacle's
-//	//bounding radius
-//	const double DistanceFromBoundary = 30.0;
-//	double       DistAway = radiusOb + DistanceFromBoundary;
+FVector2DPlus USteeringBehaviors::GetHidingPosition(const FVector2DPlus& PosOb, const float RadiusOb, const FVector2DPlus& PosHunter)
+{
+	//calculate how far away the agent is to be from the chosen obstacle's
+	//bounding radius
+	const float DistanceFromBoundary = 80.0;
+	float       DistAway = RadiusOb + DistanceFromBoundary;
+	GEngine->AddOnScreenDebugMessage(2, .2f, FColor::Red, FString::Printf(TEXT("Distway: %f, PosObj: %f, %f PosHunter: %f, %f"), DistAway, PosOb.X, PosOb.Y, PosHunter.X, PosHunter.Y));
+	//calculate the heading toward the object from the hunter
+	FVector2DPlus ToOb = Vec2DNormalize(PosOb - PosHunter);
+	GEngine->AddOnScreenDebugMessage(3, .2f, FColor::Red, FString::Printf(TEXT("ToOb: %F, %F"), ToOb.X, ToOb.Y));
+	//scale it to size and add to the obstacles position to get
+	//the hiding spot.
+	return (ToOb * DistAway) + PosOb;
+}
+
+//------------------------------- FollowPath -----------------------------
 //
-//	//calculate the heading toward the object from the hunter
-//	Vector2D ToOb = Vec2DNormalize(posOb - posHunter);
-//
-//	//scale it to size and add to the obstacles position to get
-//	//the hiding spot.
-//	return (ToOb * DistAway) + posOb;
-//}
+//  Given a series of Vector2Ds, this method produces a force that will
+//  move the agent along the waypoints in order. The agent uses the
+// 'Seek' behavior to move to the next waypoint - unless it is the last
+//  waypoint, in which case it 'Arrives'
+//------------------------------------------------------------------------
+FVector2DPlus USteeringBehaviors::FollowPath()
+{
+
+	//move to next target if close enough to current target (working in
+	//distance squared space)
+	if (FVector2DPlus::DistSquared(VehiclePtr->GetMovementPath()->CurrentWaypoint(), VehiclePtr->GetActorLocation2D()) <
+		WaypointPathDistanceSq)
+	{
+		if (!VehiclePtr->GetMovementPath()->SetNextWaypoint()) // if at last non looping waypoint
+		{
+			FollowPathOff();
+			if (VehiclePtr->bDrawDebugLines && GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(20, 5.f, FColor::Red, TEXT("No More Waypoints"));
+			}
+				VehiclePtr->VelocityZero();//stops player at target
+		}
+		else
+		{
+		if (VehiclePtr->bDrawDebugLines && GEngine)
+			GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Yellow, TEXT("OntoNextPath"));
+		}
+	}
+
+	if (!VehiclePtr->GetMovementPath()->Finished() || VehiclePtr->GetMovementPath()->GetPathLooped())
+	{
+		if (VehiclePtr->bDrawDebugLines && GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(1, .5f, FColor::Green, FString::Printf(TEXT("Going to path: %s"), *VehiclePtr->GetMovementPath()->GetCurrWaypointTarget()->GetName()));
+		}
+		return Seek(VehiclePtr->GetMovementPath()->CurrentWaypoint());
+	}
+
+	else
+	{
+		if (VehiclePtr->bDrawDebugLines && GEngine)
+		{
+				GEngine->AddOnScreenDebugMessage(3, .5f, FColor::Yellow, TEXT("Arriving at destination"));
+		}
+		return Arrive(VehiclePtr->GetMovementPath()->CurrentWaypoint());
+	}
+}

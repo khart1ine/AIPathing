@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "PaperSprite.h"
+#include "MovementPath.h"
 #include "EngineGlobals.h"
 
 
@@ -51,7 +52,11 @@ AMovementVehicle::AMovementVehicle()
 	WeightEvade = 1.0f;
 	WeightWander = 1.0f;
 	WeightObstacleAvoidance = 1.0f;
-	WeightWallAvoidance = 1.0F;
+	WeightWallAvoidance = 1.0f;
+	WeightInterpose = 1.0f;
+	WeightHide = 1.0f;
+	WeightSeparation = 1.0f;
+	WeightFollowPath = 1.0f;
 }
 
 TArray<class AMovementObstacle*>& AMovementVehicle::GetGameModeObstacles() const
@@ -84,20 +89,12 @@ void AMovementVehicle::PrintDebugLineFromPlayerOrigin(FVector2DPlus End, FColor 
 						0,
 						2	//thickness
 		);
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(13, 150.0f, FColor::Yellow,
-				FString::Printf(TEXT("Start: %f, %f - Finish: %f, %f"),
-					Start.X, Start.Z, Finish.X, Finish.Z), false);
-
-		}
 }
 
 void AMovementVehicle::BeginPlay()
 {
 
 	Super::BeginPlay();
-
 
 	Steering = nullptr;
 
@@ -113,6 +110,8 @@ void AMovementVehicle::BeginPlay()
 		Steering->SetWanderRadius(WanderRadius);
 		Steering->SetLookAheadPursuit(LookAheadPursuit);
 		Steering->SetDecelerationTweeker(DecelerationTweaker);
+		Steering->SetWaypointPathDistance(WaypointPathDistanceSq);
+		MovementPath->SetPathLoop(bWaypointLoop);
 
 		/** Turn on and off behavior flags that are set in editor**/
 		Steering->SetBehaviorFlags(BehaviorFlags);
@@ -129,6 +128,7 @@ void AMovementVehicle::BeginPlay()
 		Steering->SetBehaviorWeights(BehaviorTypes::Separation, WeightSeparation);
 		Steering->SetBehaviorWeights(BehaviorTypes::Separation, WeightInterpose);
 		Steering->SetBehaviorWeights(BehaviorTypes::Hide, WeightHide);
+		Steering->SetBehaviorWeights(BehaviorTypes::Hide, WeightFollowPath);
 	}
 
 	//Puts current location in editor into the Location for the 2D Struct
