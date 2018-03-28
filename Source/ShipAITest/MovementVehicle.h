@@ -152,6 +152,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrive SB", meta = (BlueprintProtect = "true"))
 	float DecelerationTweaker;
 
+	/** Edit offset for offset pursuit behavior **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Arrive SB", meta = (BlueprintProtect = "true"))
+	FVector2DPlus Offset;
+
 	/** Edit distance to waypoint before moving to next waypoint **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Path Behavior", meta = (BlueprintProtect = "true"))
 	float WaypointPathDistanceSq;
@@ -192,7 +196,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
 	float WeightHide;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-		float WeightFollowPath;
+	float WeightFollowPath;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
+	float WeightOffsetPursuit;
+
+	
 
 	/** Set bits to turn on and off behaviors **/
 	UPROPERTY(EditAnywhere, Category = "Steering Behaviors", meta = (Bitmask, BitmaskEnum = "BehaviorTypes"))

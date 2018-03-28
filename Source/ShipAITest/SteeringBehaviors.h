@@ -36,6 +36,7 @@ enum class BehaviorTypes : uint8
 	Interpose			UMETA(DisplayName = "Interpose"),
 	Hide				UMETA(DisplayName = "Hide"),
 	FollowPath			UMETA(DisplayName = "Follow Path"),
+	OffsetPursuit		UMETA(Displayname = "Offset Pursuit"),
 	Separation			UMETA(DisplayName = "Separation")
 };
 
@@ -82,6 +83,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Pursuit and Evade SB")
 	void SetWaypointPathDistance(float DistanceSq) { WaypointPathDistanceSq = DistanceSq; }
 
+	/** Amount of offset for offset pursuit behavior **/
+	UFUNCTION(BlueprintCallable, Category = "Offset Pursuit SB")
+	void SetOffset(FVector2DPlus Off) { Offset = Off; }
+
 	UFUNCTION(BlueprintCallable, Category = "Weights")
 	void SetBehaviorWeights(BehaviorTypes BT, float Amount);
 
@@ -101,6 +106,7 @@ public:
 	void InterposeOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Interpose); }
 	void HideOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::Hide); }
 	void FollowPathOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::FollowPath); }
+	void OffsetPursuitOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes::OffsetPursuit); }
 
 	/** set binary flags off  **/
 	void SeekOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Seek)); }
@@ -115,6 +121,7 @@ public:
 	void InterposeOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Interpose)); }
 	void HideOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::Hide)); }
 	void FollowPathOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::FollowPath)); }
+	void OffsetPursuitOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes::OffsetPursuit)); }
 
 	/** Check if binary flag is on **/
 	bool IsSeekOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Seek)); }
@@ -129,6 +136,7 @@ public:
 	bool IsInterposeOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Interpose)); }
 	bool IsHideOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::Hide)); }
 	bool IsFollowPathOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::FollowPath)); }
+	bool IsOffsetPursuitOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes::OffsetPursuit)); }
 
 private:
 
@@ -176,6 +184,7 @@ private:
 	float WeightInterpose;
 	float WeightHide;
 	float WeightFollowPath;
+	float WeightOffsetPursuit;
 	float WanderJitter;
 	float DecelerationTweaker; //range between .3 and 1 to slow deceleration for Arrive SB
 	float LookAheadPursuit; // how far in front of the player's vector should the vehicle target 
@@ -192,6 +201,9 @@ private:
 
 	//Creates the antenna utilized by the vehicle for the wall avoidance behavior
 	void CreateFeelers();
+
+	//Offset used by offset pursuit steering behavior
+	FVector2DPlus Offset;
 
 	/* ......................................................................
 
@@ -239,6 +251,10 @@ private:
 
 		/** Puts the vehicle on a path of waypoints **/
 		FVector2DPlus FollowPath();
+
+		/** this behavior maintains a position, in the direction of offset
+			 target vehicle **/
+		FVector2DPlus OffsetPursuit(const AMovementPlayer* Agent, const FVector2DPlus NewOffset);
 
 };
 

@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "PaperSprite.h"
 #include "MovementPath.h"
+#include "MovementPlayer.h"
 #include "EngineGlobals.h"
 
 
@@ -57,6 +58,7 @@ AMovementVehicle::AMovementVehicle()
 	WeightHide = 1.0f;
 	WeightSeparation = 1.0f;
 	WeightFollowPath = 1.0f;
+	WeightOffsetPursuit = 1.0f;
 }
 
 TArray<class AMovementObstacle*>& AMovementVehicle::GetGameModeObstacles() const
@@ -111,7 +113,6 @@ void AMovementVehicle::BeginPlay()
 		Steering->SetLookAheadPursuit(LookAheadPursuit);
 		Steering->SetDecelerationTweeker(DecelerationTweaker);
 		Steering->SetWaypointPathDistance(WaypointPathDistanceSq);
-		MovementPath->SetPathLoop(bWaypointLoop);
 
 		/** Turn on and off behavior flags that are set in editor**/
 		Steering->SetBehaviorFlags(BehaviorFlags);
@@ -131,6 +132,10 @@ void AMovementVehicle::BeginPlay()
 		Steering->SetBehaviorWeights(BehaviorTypes::Hide, WeightFollowPath);
 	}
 
+	if (MovementPath)
+	{
+		MovementPath->SetPathLoop(bWaypointLoop);
+	}
 	//Puts current location in editor into the Location for the 2D Struct
 	Location2D = FVector2DPlus(0.0f, 0.0f);
 	Location2D.X = GetActorLocation().X;
@@ -156,6 +161,14 @@ void AMovementVehicle::BeginPlay()
 	if (PaperSprite)
 	{
 		Radius = FVector2DPlus::Diagonal(PaperSprite->GetSourceSize().X, PaperSprite->GetSourceSize().Y, CollisionRadiusAdjustment) / 2;
+	}
+
+	if (Steering->IsOffsetPursuitOn())
+	{
+		/** Sets position relative to leader for offset pursuit**/
+		FVector LocalPos = DynamicTarget->GetTransform().InverseTransformPosition(GetActorLocation());
+		Offset = FVector2DPlus(LocalPos.X, LocalPos.Z);
+		Steering->SetOffset(Offset);
 	}
 }
 

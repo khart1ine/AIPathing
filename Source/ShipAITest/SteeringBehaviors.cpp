@@ -28,6 +28,7 @@ USteeringBehaviors::USteeringBehaviors()
 	WeightInterpose = 1.0f;
 	WeightHide = 1.0f;
 	WeightFollowPath = 1.0f;
+	WeightOffsetPursuit = 1.0f;
 	LookAheadPursuit = 1.0f;
 	WanderTarget = FVector2DPlus(0.0f, 0.0f);
 	WanderRadius = 50.f;
@@ -107,6 +108,15 @@ FVector2DPlus USteeringBehaviors::CalculateWeightedSum()
 			TargetArrive * WeightPursuit, FColor(0, 50, 50), true);
 
 		SteeringForce += (TargetArrive * WeightPursuit);
+	}
+
+
+	if (IsOffsetPursuitOn())
+	{
+		//check(VehiclePtr && "pursuit target not assigned");
+		//check(!Offset.isZero() && "No offset assigned");
+
+		SteeringForce += OffsetPursuit(VehiclePtr->ReturnDynamicTargetPtr(),Offset) * WeightOffsetPursuit;
 	}
 
 	if (IsEvadeOn() && VehiclePtr->ReturnDynamicTargetPtr())
@@ -671,7 +681,7 @@ FVector2DPlus USteeringBehaviors::Hide( AMovementPlayer* Hunter, const TArray<AM
 		return Evade(Hunter);
 	}
 	
-	GEngine->AddOnScreenDebugMessage(1, .2f, FColor::Red, FString::Printf(TEXT("BestHidingSpot: x: %f, y: %f"), BestHidingSpot.X, BestHidingSpot.Y));
+	//GEngine->AddOnScreenDebugMessage(1, .2f, FColor::Red, FString::Printf(TEXT("BestHidingSpot: x: %f, y: %f"), BestHidingSpot.X, BestHidingSpot.Y));
 
 	//else use Arrive on the hiding spot
 	return Arrive(BestHidingSpot);
@@ -746,4 +756,34 @@ FVector2DPlus USteeringBehaviors::FollowPath()
 		}
 		return Arrive(VehiclePtr->GetMovementPath()->CurrentWaypoint());
 	}
+}
+
+//------------------------- Offset Pursuit -------------------------------
+//
+//  Produces a steering force that keeps a vehicle at a specified offset
+//  from a leader vehicle
+//------------------------------------------------------------------------
+FVector2DPlus USteeringBehaviors::OffsetPursuit(const AMovementPlayer* Agent, const FVector2DPlus NewOffset)
+{
+	//Get ship's direction of movement and convert to angle in degrees
+
+	float VelAngle = FMath::RadiansToDegrees(Agent->Get2DVelocity().GetNormal().GetAngle());
+
+	//rotate offset and cast in world space
+	FVector2DPlus WorldOffsetPos = NewOffset.GetRotated(VelAngle) + Agent->GetActorLocation2D();
+
+
+	FVector2DPlus ToOffset = WorldOffsetPos - VehiclePtr->GetActorLocation2D();
+
+	//the lookahead time is propotional to the distance between the leader
+	//and the pursuer; and is inversely proportional to the sum of both
+	//agent's velocities
+	float LookAheadTime = ToOffset.Size() /
+		(VehiclePtr->GetMaxSpeed() + Agent->GetSpeed());
+
+	if (VehiclePtr->bDrawDebugLines) VehiclePtr->PrintDebugLineFromPlayerOrigin(
+		WorldOffsetPos + Agent->Get2DVelocity() * LookAheadTime, FColor(50, 0, 0), false);
+
+	//now Arrive at the predicted future position of the offset
+	return Arrive(WorldOffsetPos + Agent->Get2DVelocity() * LookAheadTime);
 }

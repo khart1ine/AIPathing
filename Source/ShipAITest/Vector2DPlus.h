@@ -50,6 +50,13 @@ public:
 	..................................................................*/
 	void Zero() {X = 0.0f; Y = 0.0f; }
 
+	/*.......................IsZero.........................................
+
+	Returns true if the X and Y value are 0
+
+	..................................................................*/
+	bool isZero()const { return (X*X + Y*Y) < TNumericLimits<float>::Min(); }
+
 	/*........................GetNormal.........................................
 
 	Returns the normal of this vector without changing it
@@ -69,6 +76,13 @@ public:
 
 		return Normalized;
 	}
+
+	//----------------------- GetAngle ------------------------------------------
+	//
+	//	returns angle in radians from FVector2DPlus
+	//
+	//---------------------------------------------------------------------------
+	inline float GetAngle()const { return FMath::Atan2(Y, X); }
 
 	//----------------------- GetReverse ----------------------------------------
 	//

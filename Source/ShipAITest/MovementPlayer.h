@@ -39,6 +39,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "2DLocation")
 	FORCEINLINE FVector2DPlus GetActorLocation2D() const { return Position; }
 
+	/** Returns the X & Y 2D Actor Forward Vector of AActor **/
+	UFUNCTION(BlueprintPure, Category = "2DLocation")
+	FORCEINLINE FVector2DPlus GetActorForwardVector2D() const { return FVector2DPlus(this->GetActorForwardVector().X, this->GetActorForwardVector().Z); }
+
 	/** Returns the normalized heading of the AActor **/
 	UFUNCTION(BlueprintPure, Category = "2DLocation")
 	FORCEINLINE FVector2DPlus GetHeading() const { return FVector2DPlus::GetVectorFromAngleInDegrees(Pitch); }
