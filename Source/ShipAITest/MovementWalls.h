@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actor2D.h"
 #include "Vector2DPlus.h"
 #include "PaperSpriteComponent.h"
 #include "ActorComponent2D.h"
