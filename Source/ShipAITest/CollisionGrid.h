@@ -17,13 +17,16 @@ class SHIPAITEST_API ACollisionGrid : public AActor
 public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
-	FVector Grid;
+	FVector DebugGrid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
 	float GridOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
-	float GridLimit;	
+	int32 GridLimit;	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
+	bool bDrawBoxes;
 
 	ACollisionGrid();
 
@@ -33,4 +36,13 @@ protected:
 
 	virtual void BeginPlay() override;
 
+private:
+
+	// False values for IsValid mean space is empty and box should be green; 
+	// True values for IsValid mean space is occupied and box should be red
+	TArray<FBox> CollisionGrid;
+
+	FCollisionShape CollisionBox;
+	FVector BoxExtents;
+	float ExtentValue;
 };
