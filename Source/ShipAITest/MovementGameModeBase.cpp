@@ -105,7 +105,7 @@ void AMovementGameModeBase::WrapAround(FVector2DPlus & Pos, float Margin)
 		if (Pos.Y < NewCamExtents.BottomCameraFrustum) { Pos.Y = NewCamExtents.TopCameraFrustum; }
 }
 
-void AMovementGameModeBase:: TagNeighbors(AMovementVehicle * VehiclePtr, const float radius)
+void AMovementGameModeBase:: TagNeighbors(AActorVehicle * VehiclePtr, const float radius)
 {
 
 	//iterate through all entities checking for range
@@ -113,19 +113,45 @@ void AMovementGameModeBase:: TagNeighbors(AMovementVehicle * VehiclePtr, const f
 	for (auto& Ob : ObstaclesPtr)
 	{
 		//first clear any current tag
-		Ob->TagFalse();
+		Ob->GetComponent2D()->TagFalse();
 
 		//work in distance squared to avoid sqrts
-		FVector2DPlus To = Ob->GetActorLocation2D() - VehiclePtr->GetActorLocation2D();
+		FVector2DPlus To = Ob->GetComponent2D()->GetActorLocation2D() - VehiclePtr->Component2D->GetActorLocation2D();
 
 		//the bounding radius of the other is taken into account by adding it 
 		//to the range
-		float Range = radius + Ob->GetRadius();
+		float Range = radius + Ob->GetComponent2D()->GetRadius();
 
 		//if entity within range, tag for further consideration
 		if (To.SizeSquared() < Range*Range)
 		{
-			Ob->TagTrue();
+			Ob->GetComponent2D()->TagTrue();
+		}
+
+	}//next entity
+}
+
+void AMovementGameModeBase::TagAgentNeighbors(AActorVehicle * VehiclePtr, const float radius)
+{
+
+	//iterate through all entities checking for range
+	//for (it = others.begin(); it != others.end(); ++it)
+	for (auto& Vehicle : VehiclesInLevelPtr)
+	{
+		//first clear any current tag
+		Vehicle->Component2D->TagFalse();
+
+		//work in distance squared to avoid sqrts
+		FVector2DPlus To = Vehicle->Component2D->GetActorLocation2D() - VehiclePtr->Component2D->GetActorLocation2D();
+
+		//the bounding radius of the other is taken into account by adding it 
+		//to the range
+		float Range = radius + Vehicle->Component2D->GetRadius();
+
+		//if entity within range, tag for further consideration
+		if (To.SizeSquared() < Range*Range)
+		{
+			Vehicle->Component2D->TagTrue();
 		}
 
 	}//next entity

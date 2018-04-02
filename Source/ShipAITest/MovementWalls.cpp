@@ -15,6 +15,8 @@ AMovementWalls::AMovementWalls()
 	//Setup Sprite SubObject
 	PaperSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Player Sprite"));
 	RootComponent = PaperSpriteComponent;
+
+	Component2D = CreateDefaultSubobject<UActorComponent2D>(TEXT("2D Actor Component"));
 }
 
 void AMovementWalls::BeginPlay()
@@ -50,12 +52,12 @@ void AMovementWalls::BeginPlay()
 		LeftExtent = FVector2DPlus(GetActorForwardVector().X * -Extent.X, GetActorForwardVector().Z * -Extent.X);
 		RightExtent = FVector2DPlus(GetActorForwardVector().X * Extent.X, GetActorForwardVector().Z * Extent.X);
 		/** Project from edge to top corners anc convert to world coordinates**/
-		TopLeft = FVector2DPlus(GetActorUpVector().X * Extent.Y, GetActorUpVector().Z * Extent.Y) + LeftExtent + GetActorLocation2D();
-		TopRight = FVector2DPlus(GetActorUpVector().X * Extent.Y, GetActorUpVector().Z * Extent.Y) + RightExtent + GetActorLocation2D();
+		TopLeft = FVector2DPlus(GetActorUpVector().X * Extent.Y, GetActorUpVector().Z * Extent.Y) + LeftExtent + Component2D->GetActorLocation2D();
+		TopRight = FVector2DPlus(GetActorUpVector().X * Extent.Y, GetActorUpVector().Z * Extent.Y) + RightExtent + Component2D->GetActorLocation2D();
 		
 		/** Project from edge to bottom corners and convert to world coordinates**/
-		BottomLeft = FVector2DPlus(GetActorUpVector().X * -Extent.Y, GetActorUpVector().Z * -Extent.Y) + LeftExtent + GetActorLocation2D();
-		BottomRight = FVector2DPlus(GetActorUpVector().X * -Extent.Y, GetActorUpVector().Z * -Extent.Y) + RightExtent + GetActorLocation2D();
+		BottomLeft = FVector2DPlus(GetActorUpVector().X * -Extent.Y, GetActorUpVector().Z * -Extent.Y) + LeftExtent + Component2D->GetActorLocation2D();
+		BottomRight = FVector2DPlus(GetActorUpVector().X * -Extent.Y, GetActorUpVector().Z * -Extent.Y) + RightExtent + Component2D->GetActorLocation2D();
 		
 		/** Calculate normals of line **/
 		WallNormalTop = FVector2DPlus::Perp(TopRight - TopLeft);
@@ -87,10 +89,10 @@ void AMovementWalls::Tick(float DeltaTime)
 		PrintDebug(TopLeft, BottomLeft);
 		PrintDebug(BottomLeft, BottomRight);
 		PrintDebug(TopRight, BottomRight);
-		PrintDebug(GetActorLocation2D(), WallNormalTop * 20 + GetActorLocation2D());
-		PrintDebug(GetActorLocation2D(), WallNormalLeft * 20 + GetActorLocation2D());
-		PrintDebug(GetActorLocation2D(), WallNormalBottom * 20 + GetActorLocation2D());
-		PrintDebug(GetActorLocation2D(), WallNormalRight * 20 + GetActorLocation2D());
+		PrintDebug(Component2D->GetActorLocation2D(), WallNormalTop * 20 + Component2D->GetActorLocation2D());
+		PrintDebug(Component2D->GetActorLocation2D(), WallNormalLeft * 20 + Component2D->GetActorLocation2D());
+		PrintDebug(Component2D->GetActorLocation2D(), WallNormalBottom * 20 + Component2D->GetActorLocation2D());
+		PrintDebug(Component2D->GetActorLocation2D(), WallNormalRight * 20 + Component2D->GetActorLocation2D());
 	}
 }
 

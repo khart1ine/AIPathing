@@ -57,10 +57,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Waypoints", meta = (BlueprintProtect = "true"))
 	bool bDrawDebugLine;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Waypoints", meta = (BlueprintProtect = "true"))
+	bool bPathLooped;
+
 private:	
 	TArray<ATargetPoint*>::TConstIterator CurrWaypointIt =  TargetPoints.CreateConstIterator();
 
-	bool bPathLooped;
+
 
 
 	

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Vector2DPlus.h"
-#include "MovementVehicle.h"
+#include "ActorVehicle.h"
 #include "MovementWalls.h"
 #include "MovementGameModeBase.generated.h"
 
@@ -62,7 +62,7 @@ public:
 	TArray<class AMovementObstacle *> ObstaclesPtr;
 
 	UPROPERTY()
-	TArray<class AMovementVehicle *> VehiclesInLevelPtr;
+	TArray<class AActorVehicle *> VehiclesInLevelPtr;
 
 	/** Containts references and for FWallType struct for Walls in level**/
 	UPROPERTY()
@@ -78,7 +78,11 @@ public:
 
 	/** Tags whether an object is close enough tocollide with Obstacle**/
 	UFUNCTION()
-	void TagNeighbors(AMovementVehicle* VehiclePtr, const float radius);
+	void TagNeighbors(AActorVehicle* VehiclePtr, const float radius);
+
+	/** Tags which vehicle is in view of neighbor**/
+	UFUNCTION()
+	void TagAgentNeighbors(AActorVehicle* VehiclePtr, const float radius);
 
 
 protected:

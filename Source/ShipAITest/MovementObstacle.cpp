@@ -14,6 +14,8 @@ AMovementObstacle::AMovementObstacle()
 	//Setup Sprite SubObject
 	PaperSpriteComponent = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("Player Sprite"));
 	RootComponent = PaperSpriteComponent;
+
+	Component2D = CreateDefaultSubobject<UActorComponent2D>(TEXT("2D Actor Component"));
 }
 
 void AMovementObstacle::BeginPlay()
@@ -34,7 +36,7 @@ void AMovementObstacle::BeginPlay()
 
 	if (PaperSprite)
 	{
-		Radius = FVector2DPlus::Diagonal(PaperSprite->GetSourceSize().X * GetActorScale().X, PaperSprite->GetSourceSize().Y * GetActorScale().Z, CollisionRadiusAdjustment) / 2;
+		Component2D->SetRadius (FVector2DPlus::Diagonal(PaperSprite->GetSourceSize().X * GetActorScale().X, PaperSprite->GetSourceSize().Y * GetActorScale().Z, Component2D->GetCollisionRadiusAdjustment()) / 2);
 	}
 
 	if (GameMode)
@@ -53,7 +55,7 @@ void AMovementObstacle::Tick(float DeltaTime)
 			DrawDebugCircle(
 				GetWorld(),
 				GetActorLocation(),
-				Radius,
+				Component2D->GetRadius(),
 				32,
 				FColor(255, 0, 0),
 				false,

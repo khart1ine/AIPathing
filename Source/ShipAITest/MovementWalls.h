@@ -6,6 +6,7 @@
 #include "Actor2D.h"
 #include "Vector2DPlus.h"
 #include "PaperSpriteComponent.h"
+#include "ActorComponent2D.h"
 #include "MovementWalls.generated.h"
 
 USTRUCT(BlueprintType)
@@ -46,7 +47,7 @@ public:
  * 
  */
 UCLASS()
-class SHIPAITEST_API AMovementWalls : public AActor2D
+class SHIPAITEST_API AMovementWalls : public AActor
 {
 	GENERATED_BODY()
 	
@@ -85,4 +86,7 @@ private:
 	FVector2DPlus WallNormalBottom;
 
 	void PrintDebug(FVector2DPlus Start, FVector2DPlus End);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "2D", meta = (AllowPrivateAccess = "true"))
+	UActorComponent2D* Component2D;
 };

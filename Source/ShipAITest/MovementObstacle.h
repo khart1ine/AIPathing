@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "Actor2D.h"
 #include "PaperSpriteComponent.h"
+#include "ActorComponent2D.h"
 #include "MovementObstacle.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SHIPAITEST_API AMovementObstacle : public AActor2D
+class SHIPAITEST_API AMovementObstacle : public AActor
 {
 	GENERATED_BODY()
 
@@ -21,6 +22,10 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	/** Getting reference to gamemode holding obstacle TArray **/
+	UFUNCTION(BlueprintCallable, Category = "ObstaclesRef")
+	UActorComponent2D* GetComponent2D()const {return Component2D;}
 	
 protected:
 
@@ -40,5 +45,7 @@ private:
 	UPROPERTY()
 	class AMovementGameModeBase* GameMode;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "2D", meta = (AllowPrivateAccess = "true"))
+	UActorComponent2D* Component2D;
 	
 };
