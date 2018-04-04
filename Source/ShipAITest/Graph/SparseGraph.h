@@ -2,6 +2,8 @@
 
 #pragma once
 #include "NodeTypeEnumerations.h"
+#include "GraphNodeTypes.h"
+#include "GraphEdgeTypes.h"
 #include "CoreMinimal.h"
 
 /**
@@ -13,7 +15,8 @@ public:
 	typedef TArray<class NavGraphNode2D> NodeArray;
 	typedef TArray <class NavGraphEdge> EdgeArray;
 	SparseGraph(): NextNodeIndex(0){}
-	~SparseGraph();
+	
+	~SparseGraph(){}
 
 	/** returns the node at the given index **/
 	const NavGraphNode2D& GetNode(int Idx)const;
@@ -22,12 +25,26 @@ public:
 	NavGraphNode2D& GetNode(int Idx);
 
 	/** returns the edge at the given index **/
-	const NavGraphEdge& GetNode(int F, int T)const;
+	const NavGraphEdge& GetEdge(int F, int T)const;
 
 	/** non const version **/
-	NavGraphEdge& GetNode(int F, int T);
+	NavGraphEdge& GetEdge(int F, int T);
 
+	/*
 
+	//adds a node to the graph and returns its index
+	int   AddNode(node_type node);
+
+	//retrieves the next free node index
+	int   GetNextFreeNodeIndex()const{return m_iNextNodeIndex;}
+
+	//Use this to add an edge to the graph. The method will ensure that the
+	//edge passed as a parameter is valid before adding it to the graph. If the
+	//graph is a digraph then a similar edge connecting the nodes in the opposite
+	//direction will be automatically added.
+	void  AddEdge(EdgeType edge);
+
+	*/
 
 
 private:
@@ -47,7 +64,7 @@ private:
 //----------------------------------------------------------------------------
 const class NavGraphNode2D&  SparseGraph::GetNode(int Idx)const
 {
-	check((Idx < (int Nodes.Num()) &&
+	check((Idx < (int32) Nodes.Num()) &&
 		(Idx >= 0) &&
 		"SparseGraph::GetNode(): invalid index");
 
@@ -55,10 +72,10 @@ const class NavGraphNode2D&  SparseGraph::GetNode(int Idx)const
 }
 
 //non const version
-NavGraphNode2D&  SparseGraph::GetNode(int idx)
+NavGraphNode2D&  SparseGraph::GetNode(int Idx)
 {
-	check((idx < (int)Nodes.Num()) &&
-		(idx >= 0) &&
+	check((Idx < (int32)Nodes.Num()) &&
+		(Idx >= 0) &&
 		"<SparseGraph::GetNode>: invalid index");
 
 	return Nodes[Idx];
@@ -81,17 +98,16 @@ const NavGraphEdge& SparseGraph::GetEdge(int F, int T)const
 		"SparseGraph::GetEdge(): invalid 'To' index");
 
 
-	for (NavGraphEdge& Edge : Edges)
+	for (auto& Edge : Edges)
 	{
-		if Edge->GetTo() == To) return *Edge;
+		if (Edge.GetTo() == T) return Edge;
 	}
 
 	check(0 && "<SparseGraph::GetEdge>: edge does not exist");
 }
 
 //non const version
-template <class node_type, class edge_type>
-edge_type& SparseGraph<node_type, edge_type>::GetEdge(int from, int to)
+NavGraphEdge& SparseGraph::GetEdge(int F, int T)
 {
 	check((F < Nodes.Num()) &&
 		(F >= 0) &&
@@ -106,7 +122,7 @@ edge_type& SparseGraph<node_type, edge_type>::GetEdge(int from, int to)
 
 	for (NavGraphEdge& Edge : Edges)
 	{
-		if Edge->GetTo() == To) return *Edge;
+		if (Edge.GetTo() == T) return Edge;
 	}
 
 	check(0 && "<SparseGraph::GetEdge>: edge does not exist");
