@@ -20,7 +20,6 @@ class SHIPAITEST_API GraphEdge
 public:
 	GraphEdge(int32 F, int32 T):From(F), To(T){}
 	GraphEdge():From(InvalidNodeIndex), To(InvalidNodeIndex) {}
-
 	virtual ~GraphEdge(){}
 
 	int GetFrom()const { return From; }
