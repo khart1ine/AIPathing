@@ -968,10 +968,10 @@ FVector2DPlus UActorComponentSteeringBehavior::Separation(const TArray<AActorVeh
 			//from its neighbor.
 			SteeringForce += Vec2DNormalize(ToAgent) / ToAgent.Size() * 100;
 
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(193, .1f, FColor::Green, FString::Printf(TEXT("Pushing Away SteeringForce: %f, %f"), SteeringForce.X, SteeringForce.Y));
-			}
+			//if (GEngine)
+			//{
+			//	GEngine->AddOnScreenDebugMessage(193, .1f, FColor::Green, FString::Printf(TEXT("Pushing Away SteeringForce: %f, %f"), SteeringForce.X, SteeringForce.Y));
+			//}
 		}
 	}
 
