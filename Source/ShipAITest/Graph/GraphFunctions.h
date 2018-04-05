@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "../Vector2DPlus.h"
+//#include "../Vector2DPlus.h"
+//#include "GraphEdgeTypes.h"
 #include "SparseGraph.h"
-#include "CoreMinimal.h"
+//#include "CoreMinimal.h"
 
 //-----------------------------------------------------------------------------
 //
@@ -32,11 +33,11 @@ bool ValidNeighbour(int X, int Y, int NumCellsX, int NumCellsY)
 //  use to add the eight neighboring edges of a graph node that 
 //  is positioned in a grid layout
 //------------------------------------------------------------------------
-void GraphHelper_AddAllNeighboursToGridNode(class SparseGraph& Graph,
-	int32         Row,
-	int32         Col,
-	int32         NumCellsX,
-	int32         NumCellsY)
+void GraphHelper_AddAllNeighboursToGridNode(SparseGraph& Graph,
+											int32         Row,
+											int32         Col,
+											int32         NumCellsX,
+											int32         NumCellsY)
 {
 	for (int32 i = -1; i<2; ++i)
 	{
@@ -52,26 +53,25 @@ void GraphHelper_AddAllNeighboursToGridNode(class SparseGraph& Graph,
 			if (ValidNeighbour(NodeX, NodeY, NumCellsX, NumCellsY))
 			{
 				//calculate the distance to this node
-				FVector2DPlus PosNode = Graph.GetNode(Row*NumCellsX + Col).GetLocation();
-				FVector2DPlus PosNeighbour = Graph.GetNode(NodeY*NumCellsX + NodeX).GetLocation();
+			//	FVector2DPlus PosNode = Graph.GetNode(Row*NumCellsX + Col).GetLocation();
+			//	FVector2DPlus PosNeighbour = Graph.GetNode(NodeY*NumCellsX + NodeX).GetLocation();
 
-				double dist = PosNode.Distance(PosNeighbour);
+			//	float Dist = PosNode.Distance(PosNeighbour);
 
+				NavGraphEdge NewEdge(Row*NumCellsX + Col, NodeY*NumCellsX + NodeX);
 				//this neighbour is okay so it can be added
-				graph_type::EdgeType NewEdge(row*NumCellsX + col,
-					nodeY*NumCellsX + nodeX,
-					dist);
-				graph.AddEdge(NewEdge);
+			//	graph_type::EdgeType NewEdge(row*NumCellsX + col,
+				//	nodeY*NumCellsX + nodeX,
+					//dist);
+				Graph.AddEdge(NewEdge);
 
 				//if graph is not a diagraph then an edge needs to be added going
 				//in the other direction
-				if (!graph.isDigraph())
-				{
-					graph_type::EdgeType NewEdge(nodeY*NumCellsX + nodeX,
-						row*NumCellsX + col,
-						dist);
-					graph.AddEdge(NewEdge);
-				}
+
+				NavGraphEdge ReturningEdge(NodeY*NumCellsX + NodeX,
+					Row*NumCellsX + Col);
+				Graph.AddEdge(ReturningEdge);
+			
 			}
 		}
 	}
