@@ -22,10 +22,10 @@ public:
 	GraphEdge():From(InvalidNodeIndex), To(InvalidNodeIndex) {}
 	virtual ~GraphEdge(){}
 
-	int GetFrom()const { return From; }
+	int32 GetFrom()const { return From; }
 	void SetFrom(int32 NewIndex) { From = NewIndex; }
 
-	int GetTo()const { return To; }
+	int32 GetTo()const { return To; }
 	void SetTo(int32 NewIndex) { To = NewIndex; }
 
 	bool operator ==(const GraphEdge& Rhs)
