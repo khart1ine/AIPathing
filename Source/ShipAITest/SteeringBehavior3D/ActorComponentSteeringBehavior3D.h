@@ -12,7 +12,8 @@ enum class BehaviorTypes3D : uint8
 {
 	None 				UMETA(DisplayName = "None"),
 	Seek				UMETA(DisplayName = "Seek"),
-	Arrive				UMETA(DisplayName = "Arrive")
+	Arrive				UMETA(DisplayName = "Arrive"),
+	FollowPath			UMETA(DisplayName = "Follow Path")
 
 };
 
@@ -34,14 +35,17 @@ public:
 	/** set binary flags on**/
 	void SeekOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes3D::Seek); }
 	void ArriveOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes3D::Arrive); }
+	void FollowPathOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes3D::FollowPath); }
 
 	/** set binary flags off  **/
 	void SeekOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes3D::Seek)); }
-	void ArriveOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes3D::Arrive)); }
+	void ArriveOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes3D::Arrive)); }\
+	void FollowPathOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes3D::FollowPath)); }
 
 	/** Check if binary flag is on **/
 	bool IsSeekOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes3D::Seek)); }
 	bool IsArriveOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes3D::Arrive)); }
+	bool IsFollowPathOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes3D::FollowPath)); }
 
 protected:
 	// Called when the game starts
@@ -50,17 +54,6 @@ protected:
 	/** Set bits to turn on and off behaviors **/
 	UPROPERTY(EditAnywhere, Category = "Steering Behaviors", meta = (Bitmask, BitmaskEnum = "BehaviorTypes3D"))
 	uint32 BehaviorFlags;
-
-	/** Set bits for weights **/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	float WeightSeek;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	float WeightArrive;
-
-	/** Positive range between to slow deceleration for Arrive SB **/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering Behaviors", meta = (BlueprintProtect = "true"))
-	float DecelerationTweaker;
-
 
 private:
 
@@ -76,17 +69,4 @@ private:
 	//Calculates and sums the sterring forces from any active behaviors
 	FVector CalculateWeightedSum();
 
-
-	/* ......................................................................
-
-	BEGIN BEHAVIOR DECLARATIONS
-
-	.......................................................................*/
-
-	/** This behavior moves the agent towards a target position **/
-	FVector Seek(FVector TargetPos);
-
-	///** This behavior moves towards a target then comes to a graceful stop **/
-	FVector Arrive(FVector TargetPos);
-	
 };

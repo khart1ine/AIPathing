@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ActorComponentSteeringBehavior3D.h"
+#include "SteeringBehavior3D/ActorComponentSteeringBehavior3D.h"
+#include "SteeringBehavior3D/MovementPath3D.h"
+#include "SteeringBehavior3D/Seek3DSteerBehavComponent.h"
+#include "SteeringBehavior3D/Arrive3DSteerBehavComponent.h"
+#include "SteeringBehavior3D/FollowPathSteerBehavComponent.h"
 #include "ActorVehicle3D.generated.h"
 
 UCLASS()
@@ -35,13 +39,25 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Movement")
 	float GetMaxForce()const { return MaxForce; }
 
+	/** Getting reference to gamemode holding walls TArray **/
+	UFUNCTION(BlueprintCallable, Category = "WallsRef")
+	AMovementPath3D*  GetMovementPath()const { return MovementPath; }
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
+	class USeek3DSteerBehavComponent* SeekSteerBehav;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
+	class UArrive3DSteerBehavComponent* ArriveSteerBehav;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
+	class UFollowPathSteerBehavComponent* FollowPathSteerBehav;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	/** contains sprite component for player **/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperSprite", meta = (BlueprintProtect = "true"))
-	UStaticMeshComponent * StaticMeshComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "3D Mesh", meta = (BlueprintProtect = "true"))
+	UStaticMeshComponent* StaticMeshComponent;
 
 	/** Static Target set in world **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target", meta = (BlueprintProtect = "true"))
@@ -63,9 +79,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (BlueprintProtect = "true"))
 	float MinVelocity;
 
+	/** Stores path for vehicle **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Path Behavior", meta = (BlueprintProtect = "true"))
+	class AMovementPath3D * MovementPath;
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "2D", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
 	UActorComponentSteeringBehavior3D* ComponentSteerBeh3D;
 
 	/** 3D Location of Actor (X, Y) **/

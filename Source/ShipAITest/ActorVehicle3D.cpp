@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ActorVehicle3D.h"
+#include "Components/InstancedStaticMeshComponent.h"
 
 
 // Sets default values
@@ -8,11 +9,15 @@ AActorVehicle3D::AActorVehicle3D()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	//Setup Sprite SubObject
+	
+	//Setup Mesh SubObject
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Vehicle Mesh"));
 	RootComponent = StaticMeshComponent;
 
 	ComponentSteerBeh3D = CreateDefaultSubobject<UActorComponentSteeringBehavior3D>(TEXT("Sterring Behavior 3D Component"));
+	SeekSteerBehav = CreateDefaultSubobject<USeek3DSteerBehavComponent>(TEXT("Seek Steering Behavior"));
+	ArriveSteerBehav = CreateDefaultSubobject<UArrive3DSteerBehavComponent>(TEXT("Arrive Steering Behavior"));
+	FollowPathSteerBehav = CreateDefaultSubobject<UFollowPathSteerBehavComponent>(TEXT("Follow Path Steering Behavior"));
 
 	//Initializes default variables
 	MaxSpeed = 180.0f;
