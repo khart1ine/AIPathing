@@ -57,34 +57,44 @@ void AActorVehicle3D::Tick(float DeltaTime)
 	//Sets Speed so we can see it in Unreal Editor, can be removed if used in game as it does nothing
 	Speed = Velocity.Size();
 
-	if (GEngine)
+	MinVelocity = 10.0f;
+
+//	if (GEngine)
+//	{
+//GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Green, FString::Printf(TEXT("Speed: %f"), Speed));
+//	//	GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Green, FString::Printf(TEXT("SteeringForce: %f, %f, %f"), SteeringForce.X, SteeringForce.Y, SteeringForce.Z));
+//		//GEngine->AddOnScreenDebugMessage(3, 15.0f, FColor::Green, FString::Printf(TEXT("Velocity is: %f"), Velocity.Size()));
+//	}
+
+	//Move ship
+	if (Speed > MinVelocity)
 	{
-//GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Green, FString::Printf(TEXT("Location: %f, %f, %f"), Location.X, Location.Y, Location.Z));
-	//	GEngine->AddOnScreenDebugMessage(2, 15.0f, FColor::Green, FString::Printf(TEXT("SteeringForce: %f, %f, %f"), SteeringForce.X, SteeringForce.Y, SteeringForce.Z));
-		//GEngine->AddOnScreenDebugMessage(3, 15.0f, FColor::Green, FString::Printf(TEXT("Velocity is: %f"), Velocity.Size()));
+		//Updates Location of actor
+		SetActorLocation(Location);
+
+		//Update heading if the actor is moving
+		if (Velocity.SizeSquared() > .000000001)
+		{
+			//Normalize velocity to get heading
+			Heading = Velocity.GetSafeNormal();
+
+			//Grab rotation from actor
+			FRotator ActorRotation = Heading.Rotation();
+
+			//Update angles.  Make sure you include Yaw and Roll otherwise they change a bit causing visual glitches.
+			//In this game we are only rotating around the Y axis.
+		/*	ActorRotation.Pitch = FMath::RadiansToDegrees(FMath::Atan2(Heading.Y, Heading.X));
+			ActorRotation.Yaw = 0.f;
+			ActorRotation.Roll = 0.f;*/
+
+			//Actually rotate actor to new angle
+			SetActorRotation(ActorRotation);
+
+		}
 	}
-
-	//Updates Location of actor
-	SetActorLocation(Location);
-
-	//Update heading if the actor is moving
-	if (Velocity.SizeSquared() > .000000001)
+	else
 	{
-		//Normalize velocity to get heading
-		Heading = Velocity.GetSafeNormal();
-
-		//Grab rotation from actor
-		FRotator ActorRotation = Heading.Rotation();
-
-		//Update angles.  Make sure you include Yaw and Roll otherwise they change a bit causing visual glitches.
-		//In this game we are only rotating around the Y axis.
-	/*	ActorRotation.Pitch = FMath::RadiansToDegrees(FMath::Atan2(Heading.Y, Heading.X));
-		ActorRotation.Yaw = 0.f;
-		ActorRotation.Roll = 0.f;*/
-
-		//Actually rotate actor to new angle
-		SetActorRotation(ActorRotation);
-
+		Velocity = FVector::ZeroVector;
 	}
 }
 

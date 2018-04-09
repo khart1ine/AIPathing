@@ -19,6 +19,10 @@ UActorComponentSteeringBehavior3D::UActorComponentSteeringBehavior3D()
 
 	//Set Default Weights
 	WeightSeek = 1.0f;
+	WeightArrive = 1.0f;
+
+	//Larger number slows approach, smaller speeds up to target for Arrive SB
+	DecelerationTweaker = 3.f;
 }
 
 
@@ -41,6 +45,17 @@ FVector UActorComponentSteeringBehavior3D::CalculateWeightedSum()
 		//	TargetSeek * WeightSeek, FColor(0, 150, 0), true);
 
 		SteeringForce += (TargetSeek * WeightSeek);
+	}
+
+	if (IsArriveOn())
+	{
+		FVector TargetArrive = Arrive(OwnerVehicle->GetSBTargetLocation());
+
+	/*	if (OwnerVehicle->IsDrawDebugLines()) OwnerVehicle->PrintDebugLineFromPlayerOrigin(
+			TargetArrive * WeightArrive, FColor(0, 50, 0), true);*/
+
+		SteeringForce += (TargetArrive * WeightArrive);
+
 	}
 
 
@@ -96,4 +111,40 @@ FVector UActorComponentSteeringBehavior3D::Seek(FVector TargetPos)
 	DesiredVelocity *= OwnerVehicle->GetMaxSpeed();
 
 	return (DesiredVelocity - OwnerVehicle->GetVelocity());
+}
+
+//------------------------------ Arrive ---------------------------------
+//
+//  this behavior creates slows down as it approaches target, if far same as flee
+//------------------------------------------------------------------------
+
+FVector UActorComponentSteeringBehavior3D::Arrive(FVector TargetPos)
+{
+	FVector ToTarget = TargetPos - OwnerVehicle->GetActorLocation();
+
+	//calculate distance to target
+	float Dist = ToTarget.Size();
+
+
+	if (Dist > 20.0f)
+	{
+
+		//calculate speed to reach target given desired acceleration
+		float Speed = Dist / DecelerationTweaker;
+
+		//make sure the velocity does not exceed the max
+		//Speed = Min(Speed, OwnerVehicle->GetMaxSpeed());
+		Speed = FMath::Clamp(Speed, 0.0f, OwnerVehicle->GetMaxSpeed());
+
+		//from here proceed just like Seek except we don't need to normalize 
+		//the ToTarget vector because we have already gone to the trouble
+		//of calculating its length: dist. 
+		FVector DesiredVelocity = ToTarget * (Speed / Dist);
+
+
+		return (DesiredVelocity - OwnerVehicle->GetVelocity());
+
+
+	}
+	return FVector::ZeroVector;
 }
