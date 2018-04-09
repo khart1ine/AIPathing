@@ -45,6 +45,7 @@ public:
 	//retrieves the next free node index
 	int32   GetNextFreeNodeIndex()const{return NextNodeIndex;}
 
+	int NumNodes()const { return Nodes.Num(); }
 
 
 private:
@@ -52,7 +53,7 @@ private:
 	NodeArray Nodes;
 
 	/** An array of adjacent edges.  (each node index keys into the 
-  //list of edges associated with that node)**/
+    list of edges associated with that node)**/
 	EdgeArray Edges;
 
 	/** The index of the next node to be added **/
@@ -61,4 +62,49 @@ private:
 	//returns true if an edge is not already present in the graph. Used
 	//when adding edges to make sure no duplicates are created.
 	bool  UniqueEdge(int32 F, int32 T)const;
+
+public:
+
+	class ConstEdgeIterator
+	{
+	private:
+
+		const SparseGraph & G;
+		EdgeList CurEdge;
+		const int32 NodeIndex;
+		int32 IteratorIndex;
+
+	public:
+		
+		ConstEdgeIterator(const SparseGraph& graph, int32 node) : 
+			G(graph), NodeIndex(node), IteratorIndex(0)
+		{
+			CurEdge = G.Edges[NodeIndex];
+		}
+
+		const NavGraphEdge* begin()
+		{
+			IteratorIndex = 0;
+			return &CurEdge[0];
+		}
+
+		const NavGraphEdge* next()
+		{
+			IteratorIndex++;
+
+			if (IteratorIndex >= G.Edges[NodeIndex].Num())
+			{
+				return nullptr;
+			}
+
+			return &CurEdge[IteratorIndex];
+		}
+
+		bool end()
+		{
+			return (IteratorIndex == G.Edges[NodeIndex].Num());
+		}
+	};
+
+	friend class ConstEdgeIterator;
 };
