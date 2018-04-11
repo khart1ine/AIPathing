@@ -20,7 +20,9 @@ void Pathfinder2D::CreateGraph(int32 CellsUp, int32 CellsAcross, int32 CellSize)
 
 	// initialize source and target indices to mid-top and mid-bottom of grid 
 	SourceCell = (CellsAcross / 2);
+	IsStartAdded = true;
 	TargetCell = CellsUp * CellsAcross - SourceCell - 1;
+	IsFinishAdded = true;
 
 	Path.Empty();
 	SubTree.Empty();

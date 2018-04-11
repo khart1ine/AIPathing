@@ -38,7 +38,6 @@ public:
 private:
 
 	TArray<int32> TerrainType;
-	TArray<int32> Path;
 
 	SparseGraph* PGraph;
 
@@ -78,4 +77,8 @@ public:
 
 	void CreatePathDFS();
 
+	TArray<int32> Path;
+
+	TArray<int32> GetPath() { return Path; }
+	TArray<const NavGraphEdge*> GetSubTree() { return SubTree; }
 };

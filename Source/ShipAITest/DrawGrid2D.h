@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Graph/Pathfinder2D.h"
 #include "DrawGrid2D.generated.h"
 
 UCLASS()
@@ -12,11 +13,12 @@ class SHIPAITEST_API ADrawGrid2D : public AActor
 	GENERATED_BODY()
 	
 public:	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
 	FVector DisplayGrid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
-	float GridOffset;
+	int32 GridOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
 	int32 GridLimitX;
@@ -27,8 +29,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
 	bool bDrawDebug;
 
+	Pathfinder2D* Path;
+
 	// Sets default values for this actor's properties
 	ADrawGrid2D();
+
+	~ADrawGrid2D() { delete Path; }
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

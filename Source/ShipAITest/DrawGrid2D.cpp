@@ -12,13 +12,15 @@ ADrawGrid2D::ADrawGrid2D()
 	PrimaryActorTick.bCanEverTick = false;
 
 	DisplayGrid = FVector(0.0f, 0.0f, 0.0f);
-	GridOffset = 100.f;
+	GridOffset = 100;
 	GridLimitX = 5;
 	GridLimitZ = 5;
 	bDrawDebug = true;
 
 	ExtentValue = (GridOffset / 2);
 	BoxExtents = FVector(ExtentValue * 0.6, ExtentValue * 0.2, ExtentValue * 0.6);
+
+	Path = new Pathfinder2D();
 }
 
 // Called when the game starts or when spawned
@@ -27,9 +29,14 @@ void ADrawGrid2D::BeginPlay()
 	Super::BeginPlay();
 	DisplayGrid = GetTransform().GetLocation();
 
+	Path->CreateGraph(GridLimitZ, GridLimitX, GridOffset);
+	Path->CreatePathDFS();
+
 	if (bDrawDebug)
 	{
 		int i, j;
+
+		// Draw Vertical lines of grid
 		for (i = 0; i <= GridLimitX; ++i)
 		{
 			DrawDebugLine(GetWorld(), DisplayGrid + FVector(GridOffset* i, 0.0f, 0.0f),
@@ -37,6 +44,7 @@ void ADrawGrid2D::BeginPlay()
 				true, -1.f, 0, 5.f);
 		}
 
+		// draw horizontal lines on grid
 		for (i = 0; i <= GridLimitZ; i++)
 		{
 			DrawDebugLine(GetWorld(), DisplayGrid + FVector(0.0f, 0.0f, GridOffset* i),
@@ -44,13 +52,26 @@ void ADrawGrid2D::BeginPlay()
 				true, -1.0f, 0, 5.0f);
 		}
 
+		//draw boxes inside gird cells
 		for (i = 0; i < GridLimitX; ++i)
 		{
 			for (j = 0; j < GridLimitZ; ++j)
 			{
 				DrawDebugBox(GetWorld(), DisplayGrid + FVector(GridOffset* i, -ExtentValue, GridOffset* j) + ExtentValue,
-					BoxExtents, RandomColor(), true, -1, 0, 5);
+					BoxExtents, FColor::Red, true, -1, 0, 5);
 			}
+		}
+
+		int temp, row, column;
+
+		for (i = 0; i < Path->Path.Num(); i++)
+		{
+			temp = Path->Path[i];
+			row = temp / GridLimitZ;
+			column = temp % GridLimitX;
+
+			DrawDebugBox(GetWorld(), DisplayGrid + FVector(GridOffset* column, -ExtentValue, GridOffset* row) + ExtentValue,
+				BoxExtents, FColor::Green, true, -1, 0, 5);
 		}
 	}
 }
