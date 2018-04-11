@@ -2,6 +2,7 @@
 
 #include "FollowPathSteerBehavComponent.h"
 #include "Engine.h"
+#include "../ActorVehicle3D.h"
 
 // Sets default values for this component's properties
 UFollowPathSteerBehavComponent::UFollowPathSteerBehavComponent()

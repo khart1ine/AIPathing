@@ -13,7 +13,8 @@ enum class BehaviorTypes3D : uint8
 	None 				UMETA(DisplayName = "None"),
 	Seek				UMETA(DisplayName = "Seek"),
 	Arrive				UMETA(DisplayName = "Arrive"),
-	FollowPath			UMETA(DisplayName = "Follow Path")
+	FollowPath			UMETA(DisplayName = "Follow Path"),
+	Wander				UMETA(DisplayName = "Wander")
 
 };
 
@@ -36,16 +37,19 @@ public:
 	void SeekOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes3D::Seek); }
 	void ArriveOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes3D::Arrive); }
 	void FollowPathOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes3D::FollowPath); }
+	void HideOn() { BehaviorFlags |= 1 << static_cast<uint32>(BehaviorTypes3D::Wander); }
 
 	/** set binary flags off  **/
 	void SeekOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes3D::Seek)); }
 	void ArriveOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes3D::Arrive)); }\
 	void FollowPathOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes3D::FollowPath)); }
+	void WanderOff() { BehaviorFlags &= ~(1 << static_cast<uint32>(BehaviorTypes3D::Wander)); }
 
 	/** Check if binary flag is on **/
 	bool IsSeekOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes3D::Seek)); }
 	bool IsArriveOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes3D::Arrive)); }
 	bool IsFollowPathOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes3D::FollowPath)); }
+	bool IsWanderOn() { return BehaviorFlags & (1 << static_cast<uint32>(BehaviorTypes3D::Wander)); }
 
 protected:
 	// Called when the game starts

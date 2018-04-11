@@ -46,6 +46,11 @@ FVector UActorComponentSteeringBehavior3D::CalculateWeightedSum()
 		SteeringForce += OwnerVehicle->FollowPathSteerBehav->FollowPathWeighted(OwnerVehicle);
 	}
 
+	if (IsWanderOn())
+	{
+		SteeringForce += OwnerVehicle->WanderPathSteerBehav->WanderWeighted(OwnerVehicle);
+	}
+
 
 	SteeringForce.GetClampedToMaxSize(OwnerVehicle->GetMaxForce());
 

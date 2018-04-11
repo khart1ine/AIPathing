@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "../ActorVehicle3D.h"
 #include "Seek3DSteerBehavComponent.generated.h"
 
 
@@ -24,10 +23,10 @@ public:
 	.......................................................................*/
 
 	/** This behavior moves the agent towards a target position **/
-	FVector Seek(FVector TargetPos, AActorVehicle3D* OwnerVehicle);
+	FVector Seek(FVector TargetPos, class AActorVehicle3D* OwnerVehicle);
 
 	/** Returns weighted Seek() **/
-	FVector SeekWeighted(AActorVehicle3D* OwnerVehicle);
+	FVector SeekWeighted(class AActorVehicle3D* OwnerVehicle);
 
 protected:
 	// Called when the game starts
