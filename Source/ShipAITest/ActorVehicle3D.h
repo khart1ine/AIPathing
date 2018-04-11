@@ -9,6 +9,7 @@
 #include "SteeringBehavior3D/Seek3DSteerBehavComponent.h"
 #include "SteeringBehavior3D/Arrive3DSteerBehavComponent.h"
 #include "SteeringBehavior3D/FollowPathSteerBehavComponent.h"
+#include "SteeringBehavior3D/WanderSteerBehavComponent.h"
 #include "ActorVehicle3D.generated.h"
 
 UCLASS()
@@ -44,13 +45,20 @@ public:
 	AMovementPath3D*  GetMovementPath()const { return MovementPath; }
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
-	class USeek3DSteerBehavComponent* SeekSteerBehav;
+	USeek3DSteerBehavComponent* SeekSteerBehav;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
-	class UArrive3DSteerBehavComponent* ArriveSteerBehav;
+	UArrive3DSteerBehavComponent* ArriveSteerBehav;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
-	class UFollowPathSteerBehavComponent* FollowPathSteerBehav;
+	UFollowPathSteerBehavComponent* FollowPathSteerBehav;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
+	UWanderSteerBehavComponent* WanderPathSteerBehav;
+
+	/** Returns the time since last frame in milliseconds **/
+	UFUNCTION(BlueprintPure, Category = "2DLocation")
+	FORCEINLINE float GetDeltaTime() const { return DeltaTimeForActor; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -81,7 +89,7 @@ protected:
 
 	/** Stores path for vehicle **/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Path Behavior", meta = (BlueprintProtect = "true"))
-	class AMovementPath3D * MovementPath;
+	AMovementPath3D * MovementPath;
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
@@ -102,6 +110,10 @@ private:
 	/**a normalized vector pointing in the direction that the actor is heading  **/
 	UPROPERTY(VisibleAnywhere, Category = "Movement")
 	float Speed;
+
+	/** time in miliseconds from last frame **/
+	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	float DeltaTimeForActor;
 
 	/** Holds the game mode so player can reference camera **/
 	//UPROPERTY()

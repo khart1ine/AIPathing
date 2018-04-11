@@ -18,6 +18,7 @@ AActorVehicle3D::AActorVehicle3D()
 	SeekSteerBehav = CreateDefaultSubobject<USeek3DSteerBehavComponent>(TEXT("Seek Steering Behavior"));
 	ArriveSteerBehav = CreateDefaultSubobject<UArrive3DSteerBehavComponent>(TEXT("Arrive Steering Behavior"));
 	FollowPathSteerBehav = CreateDefaultSubobject<UFollowPathSteerBehavComponent>(TEXT("Follow Path Steering Behavior"));
+	WanderPathSteerBehav = CreateDefaultSubobject<UWanderSteerBehavComponent>(TEXT("Wander Path Steering Behavior"));
 
 	//Initializes default variables
 	MaxSpeed = 180.0f;
@@ -40,6 +41,9 @@ void AActorVehicle3D::Tick(float DeltaTime)
 {
 
 	Super::Tick(DeltaTime);
+
+	//Delta Time requied by outside function
+	DeltaTimeForActor = DeltaTime;
 
 	//Stores the upcoming force required by the vehicle
 	FVector SteeringForce;

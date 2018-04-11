@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Arrive3DSteerBehavComponent.h"
-
+#include "../ActorVehicle3D.h"
 
 // Sets default values for this component's properties
 UArrive3DSteerBehavComponent::UArrive3DSteerBehavComponent()

@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "../ActorVehicle3D.h"
 #include "Arrive3DSteerBehavComponent.generated.h"
 
 
@@ -18,10 +17,10 @@ public:
 	UArrive3DSteerBehavComponent();
 
 	///** This behavior moves towards a target then comes to a graceful stop **/
-	FVector Arrive(AActorVehicle3D* OwnerVehicle, FVector TargetPos);
+	FVector Arrive(class AActorVehicle3D* OwnerVehicle, FVector TargetPos);
 	
 	/** Returns weighted Seek() **/
-	FVector ArriveWeighted(AActorVehicle3D* OwnerVehicle);
+	FVector ArriveWeighted(class AActorVehicle3D* OwnerVehicle);
 
 
 protected:

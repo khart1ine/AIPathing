@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "../ActorVehicle3D.h"
 #include "FollowPathSteerBehavComponent.generated.h"
 
 
@@ -18,10 +17,10 @@ public:
 	UFollowPathSteerBehavComponent();
 
 	///** Puts the vehicle on a path of waypoints **/
-	FVector FollowPath(AActorVehicle3D* OwnerVehicle);
+	FVector FollowPath(class AActorVehicle3D* OwnerVehicle);
 
 	/** Returns weighted Seek() **/
-	FVector FollowPathWeighted(AActorVehicle3D* OwnerVehicle);
+	FVector FollowPathWeighted(class AActorVehicle3D* OwnerVehicle);
 
 protected:
 	// Called when the game starts
