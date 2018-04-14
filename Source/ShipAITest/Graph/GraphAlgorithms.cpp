@@ -10,6 +10,8 @@ bool Graph_SearchDFS::Search()
 
 	Stack.Push(&Dummy);
 
+	const NavGraphEdge* pE = nullptr;
+
 	while (Stack.Num() != 0)
 	{
 		const NavGraphEdge* Next = Stack.Top();
@@ -32,7 +34,7 @@ bool Graph_SearchDFS::Search()
 
 		SparseGraph::ConstEdgeIterator ConstEdgeItr(Graph, Next->GetTo());
 
-		for (const NavGraphEdge* pE = ConstEdgeItr.begin();
+		for (pE = ConstEdgeItr.begin();
 			!ConstEdgeItr.end();
 			pE = ConstEdgeItr.next())
 		{
