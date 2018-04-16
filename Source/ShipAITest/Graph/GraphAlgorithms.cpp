@@ -34,6 +34,7 @@ bool Graph_SearchDFS::Search()
 
 		SparseGraph::ConstEdgeIterator ConstEdgeItr(Graph, Next->GetTo());
 
+
 		for (pE = ConstEdgeItr.begin();
 			!ConstEdgeItr.end();
 			pE = ConstEdgeItr.next())

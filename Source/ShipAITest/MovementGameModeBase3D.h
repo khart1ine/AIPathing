@@ -21,6 +21,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/** Location of the Camera **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Position", meta = (BlueprintProtect = "true"))
+	FVector Location;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Position", meta = (BlueprintProtect = "true"))
+	FRotator Rotation;
+
 private:
 
 	/** Pointer to Camera Actor that gets spawned as fixed camera and not attached to player **/
@@ -30,10 +37,7 @@ private:
 	UPROPERTY()
 	class UCameraComponent* CameraComponent;
 
-	/** Location of the Camera **/
-	FVector Location;
 
-	FRotator Rotation;
 
 
 };
