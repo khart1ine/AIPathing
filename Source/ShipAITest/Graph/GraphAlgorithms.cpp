@@ -14,7 +14,7 @@ bool Graph_SearchDFS::Search()
 	//const NavGraphEdge* Next = nullptr;
 	const NavGraphEdge* pE = nullptr;
 
-	Stack.Push(&Dummy);
+	Stack.Emplace(&Dummy);
 
 	//while there are edges in the stack keep searching
 	while (Stack.Num() != 0)
@@ -54,7 +54,7 @@ bool Graph_SearchDFS::Search()
 		{
 			if (NodesVisited[pE->GetTo()] == unvisited)
 			{
-				Stack.Push(pE);
+				Stack.Emplace(pE);
 			}
 		}
 	}
