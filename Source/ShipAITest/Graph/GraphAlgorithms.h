@@ -31,10 +31,13 @@ private:
 	//TO PROVIDE THE USER WITH SOME VISUAL FEEDBACK
 	TArray<const NavGraphEdge*>  SpanningTree;
 
+	//the source and target node indices
 	int32 Source, Target;
 
+	//true if a path to the target has been found
 	bool PathFound;
 
+	//this method performs the DFS search
 	bool Search();
 
 public:
@@ -47,10 +50,14 @@ public:
 		PathFound = Search();
 	}
 
+	//returns true if the target node has been located
 	bool Found()const { return PathFound; }
 
+	//returns a vector containing pointers to all the edges the search has examined
 	TArray<const NavGraphEdge*> GetSearchTree()const { return SpanningTree; }
 
+	//returns a vector of node indexes that comprise the shortest path
+	//from the source to the target
 	TArray<int32> GetPathToTarget()const;
 };
 

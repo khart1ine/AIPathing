@@ -3,6 +3,9 @@
 #include "Pathfinder2D.h"
 #include "GraphFunctions.h"
 
+//----------------------- CreateGraph ------------------------------------
+//
+//------------------------------------------------------------------------
 void Pathfinder2D::CreateGraph(int32 CellsUp, int32 CellsAcross, int32 CellSize)
 {
 	TerrainType.Init(normal, CellsUp * CellsAcross);
@@ -12,8 +15,10 @@ void Pathfinder2D::CreateGraph(int32 CellsUp, int32 CellsAcross, int32 CellSize)
 	Width = CellSize;
 	Height = CellSize;
 
+	// delete any old graph
 	delete PGraph;
 
+	// create the graph
 	PGraph = new SparseGraph();
 
 	GraphHelper_CreateGrid(*PGraph, Height, Width, CellsUp, CellsAcross);
@@ -30,6 +35,7 @@ void Pathfinder2D::CreateGraph(int32 CellsUp, int32 CellsAcross, int32 CellSize)
 	CurrentAlgorithm = search_dfs;
 }
 
+//--------------------------- UpdateAlgorithm ---------------------------------
 void Pathfinder2D::UpdateAlgorithm()
 {
 	switch (CurrentAlgorithm)
@@ -47,6 +53,11 @@ void Pathfinder2D::UpdateAlgorithm()
 	}
 }
 
+//------------------------- CreatePathDFS --------------------------------
+//
+//  uses DFS to find a path between the start and target cells.
+//  Stores the path as a series of node indexes in Path.
+//------------------------------------------------------------------------
 void Pathfinder2D::CreatePathDFS()
 {
 	CurrentAlgorithm = search_dfs;
