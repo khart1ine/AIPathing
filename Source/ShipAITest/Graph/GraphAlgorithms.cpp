@@ -22,11 +22,11 @@ bool Graph_SearchDFS::Search()
 		//grab the next edge
 		const NavGraphEdge* Next = Stack.Top();
 
-		//make a note of the parent of the node this edge points to
-		Route[Next->GetTo()] = Next->GetFrom();
-		
 		//remove the edge from the stack
 		Stack.Pop();
+
+		//make a note of the parent of the node this edge points to
+		Route[Next->GetTo()] = Next->GetFrom();
 
 		//put it on the tree. (making sure the dummy edge is not placed on the tree)
 		if (Next != &Dummy)

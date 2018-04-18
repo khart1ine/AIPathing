@@ -47,6 +47,9 @@ public:
 
 	int NumNodes()const { return Nodes.Num(); }
 
+	//removes a node by setting its index to invalid_node_index
+	void  RemoveNode(int node);
+
 
 private:
 	/** The nodes that comprise this graph **/
@@ -105,6 +108,7 @@ public:
 		{
 			return (IteratorIndex == G.Edges[NodeIndex].Num());
 		}
+
 	};
 
 	friend class ConstEdgeIterator;

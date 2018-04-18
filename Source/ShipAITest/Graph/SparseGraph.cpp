@@ -166,3 +166,34 @@ int SparseGraph::AddNode(NavGraphNode2D  Node)
 		return NextNodeIndex++;
 	}
 }
+
+//------------------------------- RemoveNode -----------------------------
+//
+//  Removes a node from the graph and removes any links to neighbouring
+//  nodes
+//------------------------------------------------------------------------
+void SparseGraph::RemoveNode(int node)
+{
+	check(node < (int)Nodes.Num() && "<SparseGraph::RemoveNode>: invalid node index");
+
+	//set this node's index to invalid_node_index
+	Nodes[node].SetIndex(InvalidNodeIndex);
+
+	//if the graph is not directed remove all edges leading to this node and then
+	//clear the edges leading from the node
+	for (auto& curEdge : Edges[node])
+		{
+			for (auto& curE : Edges[curEdge.GetTo()])
+			{
+				if (curE.GetTo() == node)
+				{
+					Edges[curEdge.GetTo()].Remove(curE);
+
+					break;
+				}
+			}
+		}
+
+		//finally, clear this node's edges
+		Edges[node].Empty();
+}
