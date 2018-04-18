@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "GraphAlgorithms.h"
+#include "Engine.h"
 
 bool Graph_SearchDFS::Search()
 {
@@ -8,21 +9,23 @@ bool Graph_SearchDFS::Search()
 
 	NavGraphEdge Dummy(Source, Source, 0);
 
-	Stack.Push(&Dummy);
+	const NavGraphEdge* Next = nullptr;
+
+	Stack.Emplace(&Dummy);
 
 	const NavGraphEdge* pE = nullptr;
 
 	while (Stack.Num() != 0)
 	{
-		const NavGraphEdge* Next = Stack.Top();
+		Next = Stack.Top();
 
-		Stack.Pop();
+		Stack.Pop(false);
 
 		Route[Next->GetTo()] = Next->GetFrom();
 
 		if (Next != &Dummy)
 		{
-			SpanningTree.Push(Next);
+			SpanningTree.Emplace(Next);
 		}
 
 		NodesVisited[Next->GetTo()] = visited;
@@ -41,9 +44,11 @@ bool Graph_SearchDFS::Search()
 		{
 			if (NodesVisited[pE->GetTo()] == unvisited)
 			{
-				Stack.Push(pE);
+				Stack.Emplace(pE);
 			}
 		}
+		int temp = Stack.Num();
+		UE_LOG(LogTemp, Display, TEXT("Stack.Num(): %d"),temp);
 	}
 
 	return false;

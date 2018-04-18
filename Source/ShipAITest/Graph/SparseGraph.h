@@ -71,6 +71,7 @@ public:
 
 		const SparseGraph & G;
 		EdgeList CurEdge;
+		//auto CurEdge ( EdgeList::CreateIterator());
 		const int32 NodeIndex;
 		int32 IteratorIndex;
 
@@ -85,7 +86,7 @@ public:
 		const NavGraphEdge* begin()
 		{
 			IteratorIndex = 0;
-			return &CurEdge[0];
+			return &G.Edges[NodeIndex][0];
 		}
 
 		const NavGraphEdge* next()
@@ -97,7 +98,7 @@ public:
 				return nullptr;
 			}
 
-			return &CurEdge[IteratorIndex];
+			return &G.Edges[NodeIndex][IteratorIndex];
 		}
 
 		bool end()

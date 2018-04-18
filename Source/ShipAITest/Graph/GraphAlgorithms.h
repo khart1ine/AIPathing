@@ -52,6 +52,8 @@ public:
 	TArray<const NavGraphEdge*> GetSearchTree()const { return SpanningTree; }
 
 	TArray<int32> GetPathToTarget()const;
+
+	
 };
 
 

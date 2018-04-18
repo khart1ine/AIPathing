@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ActorVehicle3D.h"
+#include "Engine.h"
 #include "Components/InstancedStaticMeshComponent.h"
 
 
@@ -34,6 +35,27 @@ void AActorVehicle3D::BeginPlay()
 
 	Location = GetActorLocation();
 	
+	int count = 10;
+	TArray <const int*> temp = { &count };
+	while (temp.Num() != 0)
+	{
+		const int* Next = temp.Top();
+
+		GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Green, FString::Printf(TEXT("temp[Num()-1]: %d"),
+			*temp[temp.Num() - 1]));
+
+		temp.Pop();
+		if (count == 10)
+		{
+			temp.Emplace(&count);
+			temp.Emplace(&count);
+		}
+		if (count > 0)
+		{
+			temp.Emplace(&count);
+			--count;
+		}
+	}
 }
 
 // Called every frame

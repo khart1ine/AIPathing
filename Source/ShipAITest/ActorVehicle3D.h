@@ -91,6 +91,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Follow Path Behavior", meta = (BlueprintProtect = "true"))
 	AMovementPath3D * MovementPath;
 
+	/** Draws debug information for the behavior **/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Waypoints", meta = (BlueprintProtect = "true"))
+	bool bDrawDebug;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
 	UActorComponentSteeringBehavior3D* ComponentSteerBeh3D;
