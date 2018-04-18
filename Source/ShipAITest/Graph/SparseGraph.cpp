@@ -182,18 +182,29 @@ void SparseGraph::RemoveNode(int node)
 	//if the graph is not directed remove all edges leading to this node and then
 	//clear the edges leading from the node
 	for (auto& curEdge : Edges[node])
+	{
+		/*for (auto curE = Edges[curEdge.GetTo()].CreateIterator(); curE; ++curE)
 		{
-			for (auto& curE : Edges[curEdge.GetTo()])
+			if (curE->GetTo() == node)
 			{
-				if (curE.GetTo() == node)
-				{
-					Edges[curEdge.GetTo()].Remove(curE);
+				Edges[curEdge.GetTo()].Remove(*curE);
 
-					break;
-				}
+				break;
+			}
+		}*/
+
+
+		for (int32 curE = 0; curE < Edges[curEdge.GetTo()].Num() ; curE++)
+		{
+			if (Edges[curEdge.GetTo()][curE].GetTo() == node)
+			{
+				Edges[curEdge.GetTo()].RemoveAt(curE);
+
+				break;
 			}
 		}
+	}
 
-		//finally, clear this node's edges
-		Edges[node].Empty();
+	//finally, clear this node's edges
+	Edges[node].Empty();
 }

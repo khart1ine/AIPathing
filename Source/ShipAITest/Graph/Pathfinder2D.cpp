@@ -24,10 +24,20 @@ void Pathfinder2D::CreateGraph(int32 CellsUp, int32 CellsAcross, int32 CellSize)
 	GraphHelper_CreateGrid(*PGraph, Height, Width, CellsUp, CellsAcross);
 
 	// initialize source and target indices to mid-top and mid-bottom of grid 
-	SourceCell = (CellsAcross / 2);
+	//SourceCell = (CellsAcross / 2);
+	SourceCell = CellsAcross * (CellsUp - 1);
 	IsStartAdded = true;
-	TargetCell = CellsUp * CellsAcross - SourceCell - 1;
+	//TargetCell = CellsUp * CellsAcross - SourceCell - 1;
+	TargetCell = (CellsAcross - 1);
 	IsFinishAdded = true;
+
+	//UpdateGraphFromBrush(obstacle, CellsAcross + 1);
+	//UpdateGraphFromBrush(obstacle, 21);
+	//UpdateGraphFromBrush(obstacle, 16);
+	//UpdateGraphFromBrush(obstacle, 11);
+	//UpdateGraphFromBrush(obstacle, 6);
+	//UpdateGraphFromBrush(obstacle, CellsAcross * (CellsUp - 1) - 2);
+
 
 	Path.Empty();
 	SubTree.Empty();
@@ -79,5 +89,8 @@ void Pathfinder2D::CreatePathDFS()
 
 void Pathfinder2D::UpdateGraphFromBrush(int32 brush, int32 CellIndex)
 {
-
+	if (brush == 1)
+	{
+		PGraph->RemoveNode(CellIndex);
+	}
 }

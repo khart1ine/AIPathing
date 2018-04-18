@@ -12,7 +12,7 @@ class SHIPAITEST_API Graph_SearchDFS
 {
 private:
 
-	enum { visited, unvisited, no_parent_assigned };
+	enum { no_parent_assigned = -1 , visited, unvisited};
 
 	//a reference to the graph to be searched
 	const SparseGraph& Graph;
