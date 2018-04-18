@@ -51,7 +51,7 @@ class NavGraphEdge : public GraphEdge
 public:
 	NavGraphEdge (	int32 F,
 					int32 T,
-					int32 Flags = 0):GraphEdge(F,T)
+					int32 Fl = 0):GraphEdge(F,T), Flags(Fl)
 	{}
 
 	int GetFlags()const { return Flags; }

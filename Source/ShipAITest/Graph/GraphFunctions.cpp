@@ -52,7 +52,7 @@ void GraphHelper_AddAllNeighboursToGridNode(SparseGraph& Graph,
 
 				//	float Dist = PosNode.Distance(PosNeighbour);
 
-				NavGraphEdge NewEdge(Row*NumCellsX + Col, NodeY*NumCellsX + NodeX);
+				NavGraphEdge NewEdge(Row*NumCellsX + Col, NodeY*NumCellsX + NodeX, 0);
 				//this neighbour is okay so it can be added
 				//	graph_type::EdgeType NewEdge(row*NumCellsX + col,
 				//	nodeY*NumCellsX + nodeX,
@@ -63,7 +63,7 @@ void GraphHelper_AddAllNeighboursToGridNode(SparseGraph& Graph,
 				//in the other direction
 
 				NavGraphEdge ReturningEdge(NodeY*NumCellsX + NodeX,
-					Row*NumCellsX + Col);
+					Row*NumCellsX + Col, 0);
 				Graph.AddEdge(ReturningEdge);
 
 			}

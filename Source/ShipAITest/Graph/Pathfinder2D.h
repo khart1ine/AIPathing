@@ -37,31 +37,42 @@ public:
 
 private:
 
+	// terrain type of each cell
 	TArray<int32> TerrainType;
 
 	SparseGraph* PGraph;
 
+	// this is used to store any subtree returned from graph algorithms
 	TArray<const NavGraphEdge*> SubTree;
 
+	// total cost of the path fro target to source
 	float CostToTarget;
 
+	// currently selected algorithm
 	EAlgorithmType CurrentAlgorithm;
+	// current terrain brush
 	EBrushType CurrentTerrainBrush;
 
+	// dimensions of the cell
 	float Width;
 	float Height;
 
+	// number of ceslls horizontally and vertically
 	int32 CellsX;
 	int32 CellsY;
 
+	// indices of the source and target cell
 	int32 SourceCell;
 	int32 TargetCell;
 
+	// flags to indiate if the start and finish points have been added
 	bool IsStartAdded;
 	bool IsFinishAdded;
 	
+	// calls the appropriate search algorithm
 	void UpdateAlgorithm();
 
+	// Helper funciton for PaintTerrain , unused
 	void UpdateGraphFromBrush(int32 brush, int32 CellIndex);
 
 public:
@@ -75,6 +86,7 @@ public:
 
 	void CreateGraph(int32 CellsUp, int32 CellsAcross, int32 CellSize);
 
+	// pathing algorithms
 	void CreatePathDFS();
 
 	TArray<int32> Path;

@@ -20,7 +20,7 @@ ADrawGrid2D::ADrawGrid2D()
 	ExtentValue = (GridOffset / 2);
 	BoxExtents = FVector(ExtentValue * 0.6, ExtentValue * 0.2, ExtentValue * 0.6);
 
-	Path = new Pathfinder2D();
+	Pathfinder = new Pathfinder2D();
 }
 
 // Called when the game starts or when spawned
@@ -29,8 +29,8 @@ void ADrawGrid2D::BeginPlay()
 	Super::BeginPlay();
 	DisplayGrid = GetTransform().GetLocation();
 
-	Path->CreateGraph(GridLimitZ, GridLimitX, GridOffset);
-	Path->CreatePathDFS();
+	Pathfinder->CreateGraph(GridLimitZ, GridLimitX, GridOffset);
+	Pathfinder->CreatePathDFS();
 
 	if (bDrawDebug)
 	{
@@ -52,7 +52,7 @@ void ADrawGrid2D::BeginPlay()
 				true, -1.0f, 0, 5.0f);
 		}
 
-		//draw boxes inside gird cells
+		//draw red boxes inside gird cells
 		for (i = 0; i < GridLimitX; ++i)
 		{
 			for (j = 0; j < GridLimitZ; ++j)
@@ -62,11 +62,12 @@ void ADrawGrid2D::BeginPlay()
 			}
 		}
 
+		//draw green boxes where the path is
 		int temp, row, column;
 
-		for (i = 0; i < Path->Path.Num(); i++)
+		for (i = 0; i < Pathfinder->Path.Num(); i++)
 		{
-			temp = Path->Path[i];
+			temp = Pathfinder->Path[i];
 			row = temp / GridLimitZ;
 			column = temp % GridLimitX;
 
