@@ -12,12 +12,6 @@ AMovementGameModeBase3D::AMovementGameModeBase3D()
 {
 	Location = FVector(-1100.0f, 0.0f, 220.0f);
 	Rotation = FRotator(0.0f, 0.0f, 0.0f);
-
-if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, GetWorld()->GetMapName());
-if (GEngine) if (GetWorld()->GetMapName() == TEXT("UEDPIE_0_M_FindNearestWall"))
-	{
-		Location = FVector(10.0f, 0.0f, 0.0f);
-	}
 }
 
 void AMovementGameModeBase3D::BeginPlay()

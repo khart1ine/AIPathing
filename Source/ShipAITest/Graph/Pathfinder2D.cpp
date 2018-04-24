@@ -28,13 +28,13 @@ void Pathfinder2D::CreateGraph(int32 CellsUp, int32 CellsAcross, int32 CellSize)
 	SourceCell = CellsAcross * (CellsUp - 1);
 	IsStartAdded = true;
 	//TargetCell = CellsUp * CellsAcross - SourceCell - 1;
-	TargetCell = (CellsAcross - 1);
+	TargetCell = (CellsAcross -1);
 	IsFinishAdded = true;
 
 	//UpdateGraphFromBrush(obstacle, CellsAcross + 1);
 	//UpdateGraphFromBrush(obstacle, 21);
 	//UpdateGraphFromBrush(obstacle, 16);
-	//UpdateGraphFromBrush(obstacle, 11);
+	UpdateGraphFromBrush(obstacle, 12);
 	//UpdateGraphFromBrush(obstacle, 6);
 	//UpdateGraphFromBrush(obstacle, CellsAcross * (CellsUp - 1) - 2);
 
@@ -86,6 +86,53 @@ void Pathfinder2D::CreatePathDFS()
 
 	CostToTarget = 0.0f;
 }
+//------------------------- CreatePathBFS --------------------------------
+//
+//  uses BFS to find a path between the start and target cells.
+//  Stores the path as a series of node indexes in m_Path.
+//------------------------------------------------------------------------
+void Pathfinder2D::CreatePathBFS()
+{
+	//set current algorithm
+	CurrentAlgorithm = search_bfs;
+
+	//clear any existing path
+	Path.Empty();
+	SubTree.Empty();
+
+	//do the search
+	Graph_SearchBFS BFS(*PGraph, SourceCell, TargetCell);
+
+
+	//now grab the path (if one has been found)
+	if (BFS.Found())
+	{
+		Path = BFS.GetPathToTarget();
+	}
+
+	SubTree = BFS.GetSearchTree();
+
+	CostToTarget = 0.0;
+}
+
+//-------------------------- CreatePathDijkstra --------------------------
+//
+//  creates a path from m_iSourceCell to m_iTargetCell using Dijkstra's algorithm
+//------------------------------------------------------------------------
+void Pathfinder2D::CreatePathDijkstra()
+{
+	//set current algorithm
+	CurrentAlgorithm = search_dijkstra;
+
+	Graph_SearchDijkstra Djk(*PGraph, SourceCell, TargetCell);
+
+	Path = Djk.GetPathToTarget();
+
+	SubTree = Djk.GetSearchSPT();
+
+	CostToTarget = Djk.GetCostToTarget();
+}
+
 
 void Pathfinder2D::UpdateGraphFromBrush(int32 brush, int32 CellIndex)
 {

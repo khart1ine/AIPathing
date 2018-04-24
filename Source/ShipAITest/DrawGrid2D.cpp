@@ -17,9 +17,6 @@ ADrawGrid2D::ADrawGrid2D()
 	GridLimitZ = 5;
 	bDrawDebug = true;
 
-	ExtentValue = (GridOffset / 2);
-	BoxExtents = FVector(ExtentValue * 0.6, ExtentValue * 0.2, ExtentValue * 0.6);
-
 	Pathfinder = new Pathfinder2D();
 }
 
@@ -27,10 +24,16 @@ ADrawGrid2D::ADrawGrid2D()
 void ADrawGrid2D::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ExtentValue = (GridOffset / 2);
+	BoxExtents = FVector(ExtentValue * 0.6, ExtentValue * 0.2, ExtentValue * 0.6);
+
 	DisplayGrid = GetTransform().GetLocation();
 
 	Pathfinder->CreateGraph(GridLimitZ, GridLimitX, GridOffset);
-	Pathfinder->CreatePathDFS();
+	//Pathfinder->CreatePathDFS();
+	//Pathfinder->CreatePathBFS();
+	Pathfinder->CreatePathDijkstra();
 
 	if (bDrawDebug)
 	{

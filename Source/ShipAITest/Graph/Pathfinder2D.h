@@ -88,6 +88,8 @@ public:
 
 	// pathing algorithms
 	void CreatePathDFS();
+	void CreatePathBFS();
+	void CreatePathDijkstra();
 
 	TArray<int32> Path;
 

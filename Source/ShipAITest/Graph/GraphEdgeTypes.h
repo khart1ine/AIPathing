@@ -57,6 +57,8 @@ public:
 	int GetFlags()const { return Flags; }
 	void SetFlags(int32 F) { Flags = F; }
 
+	float GetCost()const { return 1.0f; }
+
 protected:
 	int32 Flags;
 };
