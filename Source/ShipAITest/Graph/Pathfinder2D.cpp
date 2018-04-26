@@ -75,7 +75,7 @@ void Pathfinder2D::CreatePathDFS()
 	Path.Empty();
 	SubTree.Empty();
 
-	Graph_SearchDFS DFS(*PGraph, SourceCell, TargetCell);
+	Graph_SearchDFS DFS(PGraph, SourceCell, TargetCell);
 
 	if (DFS.Found())
 	{

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "SparseGraph.h"
 #include "GraphEdgeTypes.h"
+#include "SparseGraph3D.h"
 
 /**
  * 
@@ -15,8 +16,9 @@ private:
 
 	enum { visited, unvisited, no_parent_assigned };
 
-	//a reference to the graph to be searched
-	const SparseGraph& Graph;
+	//a pointer to the graph to be searched
+	const SparseGraph* Graph;
+	const SparseGraph3D* Graph3D;
 
 	//this records the indexes of all the nodes that are visited as the
 	//search progresses
@@ -40,15 +42,24 @@ private:
 
 	//this method performs the DFS search
 	bool Search();
+	bool Search3D();
 
 public:
 
-	Graph_SearchDFS(const SparseGraph& Gra, int32 Sou, int32 Tar = -1) :
-		Graph(Gra), Source(Sou), Target(Tar), PathFound(false)
+	Graph_SearchDFS(const SparseGraph* Gra, int32 Sou, int32 Tar = -1) :
+		Graph(Gra), Source(Sou), Target(Tar), PathFound(false), Graph3D(nullptr)
 	{
-		NodesVisited.Init(unvisited, Graph.NumNodes());
-		Route.Init(no_parent_assigned, Graph.NumNodes());
+		NodesVisited.Init(unvisited, Graph->NumNodes());
+		Route.Init(no_parent_assigned, Graph->NumNodes());
 		PathFound = Search();
+	}
+
+	Graph_SearchDFS(const SparseGraph3D* Gra, int32 Sou, int32 Tar = -1) :
+		Graph3D(Gra), Source(Sou), Target(Tar), PathFound(false), Graph(nullptr)
+	{
+		NodesVisited.Init(unvisited, Graph3D->NumNodes());
+		Route.Init(no_parent_assigned, Graph3D->NumNodes());
+		PathFound = Search3D();
 	}
 
 	//returns true if the target node has been located

@@ -52,3 +52,23 @@ protected:
 	FVector2DPlus Location;
 
 };
+
+class NavGraphNode : public GraphNode
+{
+
+public:
+	//constructor
+	NavGraphNode(int Idx, FVector Loc) : GraphNode(Idx),
+		Location(Loc)
+	{}
+
+	virtual ~NavGraphNode() {}
+
+	FVector GetLocation()const { return Location; }
+	void SetLocation(FVector NewLocation) { Location = NewLocation; }
+
+protected:
+	/** the nodes position **/
+	FVector Location;
+
+};

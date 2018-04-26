@@ -30,6 +30,9 @@ void ADrawGrid2D::BeginPlay()
 
 	DisplayGrid = GetTransform().GetLocation();
 
+	ExtentValue = (GridOffset / 2);
+	BoxExtents = FVector(ExtentValue * 0.6, ExtentValue * 0.2, ExtentValue * 0.6);
+
 	Pathfinder->CreateGraph(GridLimitZ, GridLimitX, GridOffset);
 	//Pathfinder->CreatePathDFS();
 	//Pathfinder->CreatePathBFS();
@@ -55,7 +58,7 @@ void ADrawGrid2D::BeginPlay()
 				true, -1.0f, 0, 5.0f);
 		}
 
-		//draw red boxes inside gird cells
+		//draw red boxes inside grid cells
 		for (i = 0; i < GridLimitX; ++i)
 		{
 			for (j = 0; j < GridLimitZ; ++j)
