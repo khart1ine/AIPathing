@@ -133,6 +133,24 @@ void Pathfinder2D::CreatePathDijkstra()
 	CostToTarget = Djk.GetCostToTarget();
 }
 
+//--------------------------- CreatePathAStar ---------------------------
+//------------------------------------------------------------------------
+void Pathfinder2D::CreatePathAStar()
+{
+	//set current algorithm
+	CurrentAlgorithm = search_astar;
+
+
+	//create an instance of the A* search using the Euclidean heuristic
+	Graph_SearchAStar AStar(*PGraph, SourceCell, TargetCell);
+
+	Path = AStar.GetPathToTarget();
+
+	SubTree = AStar.GetSPT();
+
+	CostToTarget = AStar.GetCostToTarget();
+
+}
 
 void Pathfinder2D::UpdateGraphFromBrush(int32 brush, int32 CellIndex)
 {

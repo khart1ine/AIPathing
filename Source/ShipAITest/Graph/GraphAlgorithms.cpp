@@ -3,6 +3,7 @@
 #include "GraphAlgorithms.h"
 #include "Engine.h"
 #include "../DataStructure/PriorityQueue.h"
+#include "AStarHeuristicPolicies.h"
 
 bool Graph_SearchDFS::Search()
 {
@@ -325,3 +326,91 @@ TArray<int> Graph_SearchDijkstra::GetPathToTarget()const
 
 	return Path;
 }
+
+
+
+//-----------------------------------------------------------------------------
+void Graph_SearchAStar::Search()
+{
+	//create an indexed priority queue of nodes. The nodes with the
+	//lowest overall F cost (G+H) are positioned at the front.
+	IndexedPriorityQLow<float> Pq(FCosts, Graph.NumNodes());
+
+	//put the source node on the queue
+	Pq.Insert(Source);
+
+	//while the queue is not empty
+	while (!Pq.IsEmpty())
+	{
+		//get lowest cost node from the queue
+		int NextClosestNode = Pq.Pop();
+
+		//move this node from the frontier to the spanning tree
+		ShortestPathTree[NextClosestNode] = SearchFrontier[NextClosestNode];
+
+		//if the target has been found exit
+		if (NextClosestNode == Target) return;
+
+		//now to test all the edges attached to this node
+		SparseGraph::ConstEdgeIterator ConstEdgeItr(Graph, NextClosestNode);
+
+		for (const NavGraphEdge* pE = ConstEdgeItr.begin();
+			!ConstEdgeItr.end();
+			pE = ConstEdgeItr.next())
+		{
+			//calculate the heuristic cost from this node to the target (H)                       
+			float HCost = Heuristic_Euclid::Calculate(Graph, Target, pE->GetTo());
+
+			//calculate the 'real' cost to this node from the source (G)
+			float GCost = GCosts[NextClosestNode] + pE->GetCost();
+
+			//if the node has not been added to the frontier, add it and update
+			//the G and F costs
+			if (SearchFrontier[pE->GetTo()] == NULL)
+			{
+				FCosts[pE->GetTo()] = GCost + HCost;
+				GCosts[pE->GetTo()] = GCost;
+
+				Pq.Insert(pE->GetTo());
+
+				SearchFrontier[pE->GetTo()] = pE;
+			}
+
+			//if this node is already on the frontier but the cost to get here
+			//is cheaper than has been found previously, update the node
+			//costs and frontier accordingly.
+			else if ((GCost < GCosts[pE->GetTo()]) && (ShortestPathTree[pE->GetTo()] == NULL))
+			{
+				FCosts[pE->GetTo()] = GCost + HCost;
+				GCosts[pE->GetTo()] = GCost;
+
+				Pq.ChangePriority(pE->GetTo());
+
+				SearchFrontier[pE->GetTo()] = pE;
+			}
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+TArray<int32> Graph_SearchAStar::GetPathToTarget()const
+{
+	TArray<int> Path;
+
+	//just return an empty path if no target or no path found
+	if (Target < 0)  return Path;
+
+	int32 Nd = Target;
+
+	Path.Emplace(Nd);
+
+	while ((Nd != Source) && (ShortestPathTree[Nd] != 0))
+	{
+		Nd = ShortestPathTree[Nd]->GetFrom();
+
+		Path.Emplace(Nd);
+	}
+
+	return Path;
+}
+

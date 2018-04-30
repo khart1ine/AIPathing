@@ -36,7 +36,8 @@ void ADrawGrid2D::BeginPlay()
 	Pathfinder->CreateGraph(GridLimitZ, GridLimitX, GridOffset);
 	//Pathfinder->CreatePathDFS();
 	//Pathfinder->CreatePathBFS();
-	Pathfinder->CreatePathDijkstra();
+	//Pathfinder->CreatePathDijkstra();
+	Pathfinder->CreatePathAStar();
 
 	if (bDrawDebug)
 	{
