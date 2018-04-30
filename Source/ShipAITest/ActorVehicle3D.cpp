@@ -3,6 +3,7 @@
 #include "ActorVehicle3D.h"
 #include "Engine.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 
 // Sets default values
@@ -10,12 +11,24 @@ AActorVehicle3D::AActorVehicle3D()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	struct FConstructorStatics
+	{
+		ConstructorHelpers::FObjectFinderOptional<UStaticMesh> Mesh;
+		FConstructorStatics()
+			: Mesh(TEXT("/Game/Geometry/Meshes/UFO"))
+		{
+		}
+	};
+	static FConstructorStatics ConstructorStatics;
+
 	
 	//Setup Mesh SubObject
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Vehicle Mesh"));
+	StaticMeshComponent->SetStaticMesh(ConstructorStatics.Mesh.Get());
 	RootComponent = StaticMeshComponent;
 
-	ComponentSteerBeh3D = CreateDefaultSubobject<UActorComponentSteeringBehavior3D>(TEXT("Sterring Behavior 3D Component"));
+	ComponentSteerBeh3D = CreateDefaultSubobject<UActorComponentSteeringBehavior3D>(TEXT("Steering Behavior 3D Component"));
 	SeekSteerBehav = CreateDefaultSubobject<USeek3DSteerBehavComponent>(TEXT("Seek Steering Behavior"));
 	ArriveSteerBehav = CreateDefaultSubobject<UArrive3DSteerBehavComponent>(TEXT("Arrive Steering Behavior"));
 	FollowPathSteerBehav = CreateDefaultSubobject<UFollowPathSteerBehavComponent>(TEXT("Follow Path Steering Behavior"));
@@ -34,28 +47,6 @@ void AActorVehicle3D::BeginPlay()
 	Super::BeginPlay();
 
 	Location = GetActorLocation();
-	
-	int count = 10;
-	TArray <const int*> temp = { &count };
-	while (temp.Num() != 0)
-	{
-		const int* Next = temp.Top();
-
-		GEngine->AddOnScreenDebugMessage(1, 15.0f, FColor::Green, FString::Printf(TEXT("temp[Num()-1]: %d"),
-			*temp[temp.Num() - 1]));
-
-		temp.Pop();
-		if (count == 10)
-		{
-			temp.Emplace(&count);
-			temp.Emplace(&count);
-		}
-		if (count > 0)
-		{
-			temp.Emplace(&count);
-			--count;
-		}
-	}
 }
 
 // Called every frame

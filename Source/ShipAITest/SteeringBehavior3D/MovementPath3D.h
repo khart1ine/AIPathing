@@ -33,6 +33,7 @@ public:
 
 	bool GetPathLooped() const { return bPathLooped; }
 
+	void SetTargetPoints(TArray<ATargetPoint*> Targets) { TargetPoints = Targets; }
 
 protected:
 	// Called when the game starts or when spawned

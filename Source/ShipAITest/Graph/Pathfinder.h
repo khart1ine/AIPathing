@@ -76,8 +76,6 @@ private:
 	// calls the appropriate search algorithm
 	void UpdateAlgorithm();
 
-	// Helper funciton for PaintTerrain , unused
-	void UpdateGraphFromBrush(int32 brush, int32 CellIndex);
 
 public:
 	Pathfinder() : IsStartAdded(false), IsFinishAdded(false), Width(0),
@@ -97,4 +95,7 @@ public:
 
 	TArray<int32> GetPath() { return Path; }
 	TArray<const NavGraphEdge*> GetSubTree() { return SubTree; }
+
+	// Helper function for PaintTerrain , used to mark obstacles in terrain
+	void UpdateGraphFromBrush(int32 brush, int32 CellIndex);
 };

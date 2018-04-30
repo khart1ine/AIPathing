@@ -44,6 +44,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "WallsRef")
 	AMovementPath3D*  GetMovementPath()const { return MovementPath; }
 
+	UFUNCTION(BlueprintCallable, Category = "GetPath")
+	void  SetMovementPath(AMovementPath3D* MP) { MovementPath = MP; }
+
+	UFUNCTION(BlueprintCallable, Category = "SteerBehav")
+	UActorComponentSteeringBehavior3D*  GetSteeringBehavior()const { return ComponentSteerBeh3D; }
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Steering Behavior Component", meta = (AllowPrivateAccess = "true"))
 	USeek3DSteerBehavComponent* SeekSteerBehav;
 

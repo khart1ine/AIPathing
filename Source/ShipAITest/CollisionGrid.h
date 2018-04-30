@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Graph/Pathfinder.h"
+#include "ActorVehicle3D.h"
+#include "Engine/TargetPoint.h"
+#include "SteeringBehavior3D/MovementPath3D.h"
 #include "CollisionGrid.generated.h"
 
 /**
@@ -20,15 +24,35 @@ public:
 	FVector DebugGrid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
-	float GridOffset;
+	float GridOffset;	
+
+	// Number of horizontal cells
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
+	int32 GridLimitX;
+
+	// Number of vertical cells
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
+	int32 GridLimitZ;
+
+	// Number of cells deep
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
+	int32 GridLimitY;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
-	int32 GridLimit;	
+	bool bDrawDebug;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridProperty", meta = (AllowPrivateAccess = "true"))
-	bool bDrawBoxes;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AIShip", meta = (AllowPrivateAccess = "true"))
+	AActorVehicle3D* AIShip;
+
+	AMovementPath3D* MPPath;
+
+	TArray<ATargetPoint*> WaypointList;
+
+	Pathfinder* Pathing;
 
 	ACollisionGrid();
+
+	~ACollisionGrid() { delete Pathing; delete AIShip; delete MPPath; }
 
 	virtual void Tick(float DeltaTime) override;
 
