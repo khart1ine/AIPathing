@@ -52,7 +52,7 @@ public:
 
 	ACollisionGrid();
 
-	~ACollisionGrid() { delete Pathing; delete AIShip; delete MPPath; }
+	~ACollisionGrid() { delete Pathing; }
 
 	virtual void Tick(float DeltaTime) override;
 
