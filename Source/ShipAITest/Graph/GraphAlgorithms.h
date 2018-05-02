@@ -224,3 +224,65 @@ public:
 	float GetCostToNode(unsigned int nd)const { return CostToThisNode[nd]; }
 };
 
+//------------------------------- Graph_SearchAStar --------------------------
+//
+//  this searchs a graph using the distance between the target node and the 
+//  currently considered node as a heuristic.
+//
+//  This search is more commonly known as A* 
+//-----------------------------------------------------------------------------
+class Graph_SearchAStar
+{
+private:
+
+	//create a typedef for the edge type used by the graph
+	//	typedef typename graph_type::EdgeType Edge;
+
+private:
+
+	const SparseGraph& Graph;
+
+
+	//indexed into my node. Contains the 'real' accumulative cost to that node
+	TArray<float> GCosts;
+
+	//indexed into by node. Contains the cost from adding m_GCosts[n] to
+	//the heuristic cost from n to the target node. This is the vector the
+	//iPQ indexes into.
+	TArray<float> FCosts;
+
+	TArray<const NavGraphEdge*> ShortestPathTree;
+	TArray<const NavGraphEdge*> SearchFrontier;
+
+	int32	Source, Target;
+
+	//the A* search algorithm
+	void Search();
+
+public:
+
+	Graph_SearchAStar(const SparseGraph& Gra,
+		int   Sou,
+		int   Tar) :Graph(Gra),
+		Source(Sou),
+		Target(Tar)
+	{
+		ShortestPathTree.Init(nullptr, Graph.NumNodes()),
+		SearchFrontier.Init(nullptr, Graph.NumNodes()),
+		GCosts.Init(0.0f, Graph.NumNodes()),
+		FCosts.Init(0.0f, Graph.NumNodes()),
+
+		Search();
+	}
+
+	//returns the vector of edges that the algorithm has examined
+	TArray<const NavGraphEdge*> GetSPT()const { return ShortestPathTree; }
+
+	//returns a vector of node indexes that comprise the shortest path
+	//from the source to the target
+	TArray<int32> GetPathToTarget()const;
+
+	//returns the total cost to the target
+	float GetCostToTarget()const { return GCosts[Target]; }
+};
+

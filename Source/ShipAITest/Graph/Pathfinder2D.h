@@ -90,6 +90,7 @@ public:
 	void CreatePathDFS();
 	void CreatePathBFS();
 	void CreatePathDijkstra();
+	void CreatePathAStar();
 
 	TArray<int32> Path;
 
